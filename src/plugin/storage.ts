@@ -1,0 +1,8 @@
+import{defineDomain,domainTable}from'@deepseek-ai/dsh-storage-domain';import type{Context}from'@deepseek-ai/cordis';import{z}from'zod'
+const trip=z.object({trip_id:z.string(),employee:z.string(),origin:z.string(),destination:z.string(),date:z.string(),amount_cents:z.number().int()})
+const inv=z.object({invoice_id:z.string(),trip_id:z.string(),amount_cents:z.number().int()})
+const card=z.object({txn_id:z.string(),trip_id:z.string(),amount_cents:z.number().int()})
+const match=z.object({match_id:z.string(),trip_id:z.string(),invoice_id:z.string().optional(),card_id:z.string().optional(),order_cents:z.number().int(),invoice_cents:z.number().int(),card_cents:z.number().int(),trip_delta_cents:z.number().int(),invoice_delta_cents:z.number().int(),state:z.enum(['matched','exception']),reason:z.string(),created_at:z.string()})
+export type TripRecord=z.infer<typeof trip>;export type InvoiceRecord=z.infer<typeof inv>;export type CardRecord=z.infer<typeof card>;export type MatchRecord=z.infer<typeof match>;export type Table<T>={get(k:string):T|undefined;entries():IterableIterator<[string,T]>;size:number;put(k:string,v:T):Promise<void>}
+export const travelSpec=defineDomain({name:'travel',version:1,tables:{trips:domainTable<string,TripRecord>(trip),invoices:domainTable<string,InvoiceRecord>(inv),cards:domainTable<string,CardRecord>(card),matches:domainTable<string,MatchRecord>(match)}})
+export async function openTravel(ctx:Context){const d=await ctx.storageDomain.open(travelSpec);ctx.effect(()=>()=>d.close(),'dsh-travel-recon.domainClose');return{trips:d.table('trips') as Table<TripRecord>,invoices:d.table('invoices') as Table<InvoiceRecord>,cards:d.table('cards') as Table<CardRecord>,matches:d.table('matches') as Table<MatchRecord>}}
