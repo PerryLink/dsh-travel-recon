@@ -1,4 +1,4 @@
-# @perrylink/dsh-travel-recon
+# dsh-travel-recon
 
 Travel order/invoice/card ingest, dedupe, three-way match, read-only policy check and ledger export for DeepSeek Harness.
 
@@ -7,7 +7,7 @@ Travel order/invoice/card ingest, dedupe, three-way match, read-only policy chec
 ## Install
 
 ```sh
-dsh plugin --profile <profile> add @perrylink/dsh-travel-recon
+dsh plugin --profile <profile> add dsh-travel-recon
 dsh --profile <profile> --dump-config | grep dsh-travel-recon
 ```
 
@@ -16,7 +16,7 @@ Requires DSH `>=0.2.1-rc.3 <0.3.0` and Node `>=24.9 <25`.
 <details>
 <summary>中文摘要</summary>
 
-差旅订单/发票/卡流水对账、去重、只读政策检查与台账导出。 安装：`dsh plugin --profile <profile> add @perrylink/dsh-travel-recon`。公开/合成、alpha、非 GA。
+差旅订单/发票/卡流水对账、去重、只读政策检查与台账导出。 安装：`dsh plugin --profile <profile> add dsh-travel-recon`。公开/合成、alpha、非 GA。
 
 </details>
 
