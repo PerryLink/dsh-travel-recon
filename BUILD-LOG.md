@@ -7,3 +7,7 @@
 ### alpha.1 — policy check
 
 - Added `travel.policy_check`; tests 2/2; no approval/write.
+
+### alpha.2 — duplicate check
+
+- Added duplicate invoice/card detection; tests 2/2; gate 5 rows.

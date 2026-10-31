@@ -9,3 +9,7 @@
 
 ### latest moved
 - `latest`/`next` verified alpha.1 after propagation.
+
+## 0.1.0-alpha.2 — duplicate check (2026-10-31)
+
+- Added `travel.duplicate_check`; 5 gate rows.

@@ -1,6 +1,6 @@
 {
   "name": "@perrylink/dsh-travel-recon",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Travel order/invoice/card ingest, dedupe, three-way match and ledger xlsx (SKU-15 S1 public/synthetic demo).",
   "type": "module",
   "main": "./lib/plugin/index.js",

@@ -1,5 +1,6 @@
 req_id,metric,threshold,actual,script,evidence_sha256,pass
-SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,abe8d150564c5ffababaab129aaaf232c0870faf13f0cc1c175344bc388204d6,true
-SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,abe8d150564c5ffababaab129aaaf232c0870faf13f0cc1c175344bc388204d6,true
-SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,abe8d150564c5ffababaab129aaaf232c0870faf13f0cc1c175344bc388204d6,true
-SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,abe8d150564c5ffababaab129aaaf232c0870faf13f0cc1c175344bc388204d6,true
+SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,8e1b1e577dc4f76d5a399bbfc296993435c5b41074827dfad2c354353727b16c,true
+SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,8e1b1e577dc4f76d5a399bbfc296993435c5b41074827dfad2c354353727b16c,true
+SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,8e1b1e577dc4f76d5a399bbfc296993435c5b41074827dfad2c354353727b16c,true
+SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,8e1b1e577dc4f76d5a399bbfc296993435c5b41074827dfad2c354353727b16c,true
+SKU-15-A05,重复发票检测,1,1,scripts/acceptance.mjs,8e1b1e577dc4f76d5a399bbfc296993435c5b41074827dfad2c354353727b16c,true
