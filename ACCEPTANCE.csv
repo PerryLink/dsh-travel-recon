@@ -1,5 +1,5 @@
 req_id,metric,threshold,actual,script,evidence_sha256,pass
-SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,2e4238fe95ccc3f23a219ffa8dd109baa64d7c387fef68985b8704e26a6596b4,true
-SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,2e4238fe95ccc3f23a219ffa8dd109baa64d7c387fef68985b8704e26a6596b4,true
-SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,2e4238fe95ccc3f23a219ffa8dd109baa64d7c387fef68985b8704e26a6596b4,true
-SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,2e4238fe95ccc3f23a219ffa8dd109baa64d7c387fef68985b8704e26a6596b4,true
+SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,a38dfd95f578d3923dbe2993b54b9474b913df5119e7edc288eee5ef649ccd63,true
+SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,a38dfd95f578d3923dbe2993b54b9474b913df5119e7edc288eee5ef649ccd63,true
+SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,a38dfd95f578d3923dbe2993b54b9474b913df5119e7edc288eee5ef649ccd63,true
+SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,a38dfd95f578d3923dbe2993b54b9474b913df5119e7edc288eee5ef649ccd63,true
