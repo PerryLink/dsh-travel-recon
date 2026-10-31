@@ -1,6 +1,6 @@
 {
   "name": "dsh-travel-recon",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "Travel order/invoice/card ingest, dedupe, three-way match, read-only policy check and ledger export.",
   "type": "module",
   "main": "./lib/plugin/index.js",
@@ -17,7 +17,12 @@
     "README.md",
     "LICENSE",
     "NOTICE",
-    "THIRD-PARTY-NOTICES"
+    "THIRD-PARTY-NOTICES",
+    "README-zh.md",
+    "README-es.md",
+    "README-pt.md",
+    "README-hi.md",
+    "docs/assets"
   ],
   "dsh": {
     "bundle": {
