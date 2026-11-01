@@ -1,6 +1,7 @@
 req_id,metric,threshold,actual,script,evidence_sha256,pass,source,counted
-SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,7dbf3585de9329257e6f06fb3dd7c34b12f1388f4b4a425d762209d22e8fb1e2,true,public/synthetic,false
-SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,7dbf3585de9329257e6f06fb3dd7c34b12f1388f4b4a425d762209d22e8fb1e2,true,public/synthetic,false
-SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,7dbf3585de9329257e6f06fb3dd7c34b12f1388f4b4a425d762209d22e8fb1e2,true,public/synthetic,false
-SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,7dbf3585de9329257e6f06fb3dd7c34b12f1388f4b4a425d762209d22e8fb1e2,true,public/synthetic,false
-SKU-15-A05,重复发票检测,1,1,scripts/acceptance.mjs,7dbf3585de9329257e6f06fb3dd7c34b12f1388f4b4a425d762209d22e8fb1e2,true,public/synthetic,false
+SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,11f34ca9bfc5c9c5580ed1b91f60876185e51ecdc6fe2d2e935f38813c8d63c4,true,public/synthetic,false
+SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,11f34ca9bfc5c9c5580ed1b91f60876185e51ecdc6fe2d2e935f38813c8d63c4,true,public/synthetic,false
+SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,11f34ca9bfc5c9c5580ed1b91f60876185e51ecdc6fe2d2e935f38813c8d63c4,true,public/synthetic,false
+SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,11f34ca9bfc5c9c5580ed1b91f60876185e51ecdc6fe2d2e935f38813c8d63c4,true,public/synthetic,false
+SKU-15-A05,重复发票检测,1,1,scripts/acceptance.mjs,11f34ca9bfc5c9c5580ed1b91f60876185e51ecdc6fe2d2e935f38813c8d63c4,true,public/synthetic,false
+SKU-15-A06,跨行程重复报销,1,1,scripts/acceptance.mjs,11f34ca9bfc5c9c5580ed1b91f60876185e51ecdc6fe2d2e935f38813c8d63c4,true,public/synthetic,false

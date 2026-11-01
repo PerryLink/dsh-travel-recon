@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.0-alpha.10] — 2026-11-01
+
+### Added
+
+- `travel.reuse_check`: pre-ingest cross-trip reuse check that reports invoice IDs and card transaction IDs appearing under more than one trip (the classic double-claim pattern that the current id-keyed ingest would otherwise overwrite). Read-only. Verified by `node --test test/*.test.mjs` (7/7).
+
 ## [0.1.0-alpha.9] — 2026-11-01
 
 ### Changed

@@ -10,5 +10,11 @@
     "kind": "demo",
     "alt": "Animated dsh-travel-recon terminal session",
     "caption": "The same run, assembled line by line."
+  },
+  {
+    "path": "docs/assets/dsh-travel-recon-capability.png",
+    "kind": "capability",
+    "alt": "dsh-travel-recon real test run",
+    "caption": "Real command: node --test test/reuse.test.mjs — 3 tests passed, 0 failed (cross-trip invoice and card reuse). Run 2026-11-01; the image is rendered from the captured terminal output."
   }
 ]

@@ -10,5 +10,12 @@ export function createTools(deps:{trips:Table<TripRecord>;invoices:Table<Invoice
 
  const duplicate=defineTool({name:'travel.duplicate_check',description:'Find duplicate invoice/card records attached to the same trip. Read-only; no correction/approval.',parameters:{},output:{schema:{type:'object',additionalProperties:false,properties:{duplicates:{type:'array',required:true,items:{type:'object',additionalProperties:false,properties:{kind:{type:'string',required:true},trip_id:{type:'string',required:true},count:{type:'number',required:true}}}}}},render:(_a,v)=>text(`duplicates=${v.duplicates.length}`)},async execute(){const invoices=[...deps.invoices.entries()].map(([,v])=>v);const cards=[...deps.cards.entries()].map(([,v])=>v);const duplicates:{kind:string;trip_id:string;count:number}[]=[];for(const [tripId,count] of Object.entries(invoices.reduce((m,i)=>(m[i.trip_id]=(m[i.trip_id]??0)+1,m),{} as Record<string,number>)))if(count>1)duplicates.push({kind:'invoice',trip_id:tripId,count});for(const [tripId,count] of Object.entries(cards.reduce((m,c)=>(m[c.trip_id]=(m[c.trip_id]??0)+1,m),{} as Record<string,number>)))if(count>1)duplicates.push({kind:'card',trip_id:tripId,count});return{duplicates}}})
 
- return[ingest,match,duplicate,policy,exp]
+ const reuse=defineTool({name:'travel.reuse_check',description:'Pre-ingest cross-trip reuse check: report invoice IDs or card transaction IDs that appear under more than one trip (double-claim pattern). Read-only; needs no stored data.',parameters:{invoices_csv:{type:'string',required:true},cards_csv:{type:'string',required:true}},output:{schema:{type:'object',additionalProperties:false,properties:{invoice_reuse:{type:'array',required:true,items:{type:'object',additionalProperties:false,properties:{id:{type:'string',required:true},trips:{type:'array',required:true,items:{type:'string'}}}}},card_reuse:{type:'array',required:true,items:{type:'object',additionalProperties:false,properties:{id:{type:'string',required:true},trips:{type:'array',required:true,items:{type:'string'}}}}}}},render:(_a,v)=>text('reuse invoices='+v.invoice_reuse.length+' cards='+v.card_reuse.length)},async execute(a){
+   const group=(rows:{id:string;trip:string}[])=>{const m=new Map<string,Set<string>>();for(const r of rows){const set=m.get(r.id)??new Set<string>();set.add(r.trip);m.set(r.id,set)}return[...m.entries()].filter(([,s])=>s.size>1).map(([id,trips])=>({id,trips:[...trips].sort()})).sort((x,y)=>x.id.localeCompare(y.id))}
+   const invs=parseInvoices(a.invoices_csv).map(x=>({id:x.invoice_id,trip:x.trip_id}))
+   const cards=parseCards(a.cards_csv).map(x=>({id:x.txn_id,trip:x.trip_id}))
+   return {invoice_reuse:group(invs),card_reuse:group(cards)}
+ }})
+
+ return[ingest,match,duplicate,policy,exp,reuse]
 }
