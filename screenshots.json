@@ -16,5 +16,11 @@
     "kind": "capability",
     "alt": "dsh-travel-recon real test run",
     "caption": "Real command: node --test test/reuse.test.mjs — 3 tests passed, 0 failed (cross-trip invoice and card reuse). Run 2026-11-01; the image is rendered from the captured terminal output."
+  },
+  {
+    "path": "docs/assets/dsh-travel-recon-capability2.png",
+    "kind": "capability",
+    "alt": "dsh-travel-recon second capability run",
+    "caption": "Real command: node --test test/daily-limit.test.mjs — 2 tests passed, 0 failed (Per-employee, per-day spend against a daily cap.) Run 2026-11-01; rendered from the captured terminal output."
   }
 ]

@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.1.0-alpha.10] — 2026-11-01
+## [0.1.0-alpha.11] — 2026-11-01
+
+### Added
+
+- `travel.daily_limit_check`: per-employee, per-day spend against a daily cap, reporting every over-limit day with its overage. Read-only. Verified by `node --test test/*.test.mjs` (9/9).
+
+## [Unreleased]
 
 ### Added
 

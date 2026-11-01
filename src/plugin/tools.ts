@@ -17,5 +17,7 @@ export function createTools(deps:{trips:Table<TripRecord>;invoices:Table<Invoice
    return {invoice_reuse:group(invs),card_reuse:group(cards)}
  }})
 
- return[ingest,match,duplicate,policy,exp,reuse]
+ const dailyLimit=defineTool({name:'travel.daily_limit_check',description:'Per-employee, per-day spend against a daily cap; returns the days that exceed it with the overage. Read-only; no approval or write.',parameters:{cap_cents:{type:'number',required:true}},output:{schema:{type:'object',additionalProperties:false,properties:{days:{type:'number',required:true},over_limit:{type:'array',required:true,items:{type:'object',additionalProperties:false,properties:{employee:{type:'string',required:true},date:{type:'string',required:true},total_cents:{type:'number',required:true},over_by_cents:{type:'number',required:true}}}}}},render:(_a,v)=>text('days='+v.days+' over='+v.over_limit.length)},async execute(a){const buckets=new Map<string,{employee:string;date:string;total_cents:number}>();for(const[,trip]of deps.trips.entries()){const key=trip.employee+'|'+trip.date;const cell=buckets.get(key)??{employee:trip.employee,date:trip.date,total_cents:0};cell.total_cents+=trip.amount_cents;buckets.set(key,cell)}const over:any[]=[];for(const cell of buckets.values())if(cell.total_cents>a.cap_cents)over.push({...cell,over_by_cents:cell.total_cents-a.cap_cents});return{days:buckets.size,over_limit:over.sort((x,y)=>y.over_by_cents-x.over_by_cents)}}})
+
+ return[ingest,match,duplicate,policy,exp,reuse,dailyLimit]
 }
