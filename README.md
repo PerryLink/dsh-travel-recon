@@ -87,7 +87,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 
 ### Fixture-backed example
 
-Input: `fixtures/`
+Input: [`ACCEPTANCE.csv`](ACCEPTANCE.csv)
 
 Command: `pnpm test`
 
