@@ -1,0 +1,14 @@
+[
+  {
+    "path": "docs/assets/dsh-travel-recon-hero.png",
+    "kind": "hero",
+    "alt": "dsh-travel-recon terminal output",
+    "caption": "Real dsh-travel-recon local test run; 4 tests passed."
+  },
+  {
+    "path": "docs/assets/dsh-travel-recon-demo.gif",
+    "kind": "demo",
+    "alt": "Animated dsh-travel-recon terminal session",
+    "caption": "The same run, assembled line by line."
+  }
+]

@@ -33,6 +33,10 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 *वर्कफ़्लो: स्थानीय इनपुट → प्लगइन → स्थानीय आउटपुट। मॉडल कॉल आवश्यक नहीं।*
 
+![Real dsh-travel-recon terminal output](docs/assets/dsh-travel-recon-hero.png)
+
+*वास्तविक स्थानीय परीक्षण; कोई मॉडल या नेटवर्क कॉल नहीं।*
+
 ## इंस्टॉल
 
 इंस्टॉल और सत्यापन:
@@ -87,7 +91,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 
 ### fixture-आधारित उदाहरण
 
-इनपुट: [`ACCEPTANCE.csv`](ACCEPTANCE.csv)
+इनपुट: [`ACCEPTANCE.csv`](https://github.com/PerryLink/dsh-travel-recon/blob/main/ACCEPTANCE.csv)
 
 कमांड: `pnpm test`
 
@@ -137,6 +141,9 @@ pnpm build && pnpm lint && pnpm typecheck && pnpm test
 
 सहोदर पैकेज और परिवार सूचकांक: [dsh-einvoice](https://github.com/PerryLink/dsh-einvoice) · [dsh-bankrec](https://github.com/PerryLink/dsh-bankrec) · [dsh-ap-three-way](https://github.com/PerryLink/dsh-ap-three-way) · [dsh-finops-suite](https://github.com/PerryLink/dsh-finops-suite)
 
+संबंधित चेकर (अंग्रेज़ी तालिका): [Related checkers](README.md#related-checkers).
+
+- [समस्या निवारण (अंग्रेज़ी)](TROUBLESHOOTING.md)
 - [डोमेन सूचकांक](https://perrylink.github.io/dsh-plugins/)
 - [चेकर परिवार](https://perrylink.github.io/zh/checkers/)
 - [मुख्य परिवार](https://github.com/PerryLink/dsh-kit)

@@ -33,6 +33,10 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 *Workflow: local input → plugin → local output. No model call is required.*
 
+![Real dsh-travel-recon terminal output](docs/assets/dsh-travel-recon-hero.png)
+
+*Real local test run; no model or network call.*
+
 ## Install
 
 Install and verify:
@@ -87,7 +91,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 
 ### Fixture-backed example
 
-Input: [`ACCEPTANCE.csv`](ACCEPTANCE.csv)
+Input: [`ACCEPTANCE.csv`](https://github.com/PerryLink/dsh-travel-recon/blob/main/ACCEPTANCE.csv)
 
 Command: `pnpm test`
 
@@ -137,6 +141,17 @@ pnpm build && pnpm lint && pnpm typecheck && pnpm test
 
 Sibling packages and family indexes: [dsh-einvoice](https://github.com/PerryLink/dsh-einvoice) · [dsh-bankrec](https://github.com/PerryLink/dsh-bankrec) · [dsh-ap-three-way](https://github.com/PerryLink/dsh-ap-three-way) · [dsh-finops-suite](https://github.com/PerryLink/dsh-finops-suite)
 
+
+### Related checkers
+
+Each entry is a separate package with its own rule pack and version; install only the ones you need.
+
+| Package | Why it is relevant |
+|---|---|
+| [`dsh-invoice-ledger`](https://github.com/PerryLink/dsh-invoice-ledger) | Invoice anomalies for the same trip. |
+| [`dsh-excel-reconcile`](https://github.com/PerryLink/dsh-excel-reconcile) | Card/ledger alignment outside the built-in order/invoice/card match. |
+
+- [Troubleshooting](TROUBLESHOOTING.md)
 - [Domain index](https://perrylink.github.io/dsh-plugins/)
 - [Checker family](https://perrylink.github.io/zh/checkers/)
 - [Mainline family](https://github.com/PerryLink/dsh-kit)
