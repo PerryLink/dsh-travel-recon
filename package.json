@@ -1,6 +1,6 @@
 {
   "name": "dsh-travel-recon",
-  "version": "0.1.0-alpha.13",
+  "version": "0.1.0-alpha.14",
   "description": "Travel order/invoice/card ingest, dedupe, three-way match, read-only policy check and ledger export.",
   "type": "module",
   "main": "./lib/plugin/index.js",
@@ -23,6 +23,7 @@
     "README-pt.md",
     "README-hi.md",
     "docs/assets",
+    "samples",
     "SECURITY.md",
     "PRIVACY.md",
     "CODE_OF_CONDUCT.md",
@@ -35,6 +36,20 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "demo": {
+      "sample": "samples/quickstart/input",
+      "prompt": "帮我用自带样例核对这趟差旅的订单、发票和卡流水，列出对不上的单据和超标的天数。",
+      "expect": "samples/quickstart/expected/result.json",
+      "screenshot": "docs/assets/quickstart.png",
+      "reads": [
+        "用户指定的差旅行程/发票/卡流水 CSV"
+      ],
+      "writes": [
+        "$DSH_HOME/storages/dsh-travel-recon"
+      ],
+      "network": false,
+      "external": []
     }
   },
   "engines": {

@@ -1,0 +1,75 @@
+{
+  "package": "dsh-travel-recon",
+  "sample": "synthetic/quickstart",
+  "ingest": {
+    "trips": 4,
+    "invoices": 5,
+    "cards": 3,
+    "skipped": 0,
+    "duplicate_trips": 0
+  },
+  "match": {
+    "matched": 2,
+    "exceptions": 2,
+    "exception_detail": [
+      {
+        "trip_id": "TRIP-1003",
+        "reason": "amount_mismatch",
+        "trip_delta_cents": -5000,
+        "invoice_delta_cents": 0
+      },
+      {
+        "trip_id": "TRIP-1004",
+        "reason": "card_missing",
+        "trip_delta_cents": 0,
+        "invoice_delta_cents": -32000
+      }
+    ]
+  },
+  "duplicates": [
+    {
+      "kind": "invoice",
+      "trip_id": "TRIP-1002",
+      "count": 2
+    }
+  ],
+  "policy": {
+    "checked": 4,
+    "violations": [
+      {
+        "trip_id": "TRIP-1003",
+        "reason": "over_policy"
+      }
+    ]
+  },
+  "daily_limit": {
+    "days": 3,
+    "over_limit": [
+      {
+        "employee": "EMP-01",
+        "date": "2026-04-01",
+        "total_cents": 373000,
+        "over_by_cents": 73000
+      }
+    ]
+  },
+  "reuse": {
+    "invoice_reuse": [],
+    "card_reuse": []
+  },
+  "workpaper": {
+    "sheets": [
+      "Trips",
+      "Matches"
+    ],
+    "rows": [
+      5,
+      5
+    ]
+  },
+  "input_sha256": {
+    "trips.csv": "99488e140d4b464601e7f757610f67ef0397d2fd3b583aa62e0baf686bca8623",
+    "invoices.csv": "9324e440dbdecf3ac5cb5ed2e0deb2ab351b6f386df38586ca02da7e0db3ea7c",
+    "cards.csv": "0c5ca6a848c66bd920a5f1f4b1c9055352509e756a430325711339547b501ce6"
+  }
+}

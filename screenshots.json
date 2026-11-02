@@ -1,5 +1,16 @@
 [
   {
+    "path": "docs/assets/quickstart.png",
+    "kind": "quickstart",
+    "alt": "dsh-travel-recon quickstart run on the shipped synthetic sample",
+    "caption": "Real run: node samples/quickstart/run.mjs on samples/quickstart/input; output matches samples/quickstart/expected/result.json.",
+    "command": "node samples/quickstart/run.mjs",
+    "run_at": "2026-11-02T20:31:15+08:00",
+    "output_sha256": "a3a3ca062c41b134fab6c24301af855068b51fe6e476e17ec04b96cf96e0d8c6",
+    "log_sha256": "4a8afa9bd6f2fc8fb8516606c8058f51b463023d98c384ebb311e91cef3b3a5e",
+    "log": "docs/assets/quickstart.txt"
+  },
+  {
     "path": "docs/assets/dsh-travel-recon-hero.png",
     "kind": "hero",
     "alt": "dsh-travel-recon terminal output",

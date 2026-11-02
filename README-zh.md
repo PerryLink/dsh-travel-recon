@@ -37,6 +37,75 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 *本地真实测试运行；不调用模型或网络。*
 
+## 一句话
+
+把差旅行程、发票与卡流水逐单核对，列出不符单据和超限天数。
+
+## 适合 / 不适合
+
+- **适合**：几十到几百条差旅行程、发票和卡流水；需要一份逐单对账、重复报销提示和每日限额超标的本地台账。
+- **不适合**：需要自动审批、打款或修改报销单的场景；本包只做只读检查与本地导出，不替你批准。
+
+## 输入
+
+- 行程 CSV：UTF-8，表头 `trip_id,employee,origin,destination,date,amount`。
+- 发票 CSV：`invoice_id,trip_id,amount`；卡流水 CSV：`txn_id,trip_id,amount`。
+- 金额最多两位小数；建议单个文件 ≤5 MB。自带样例在 `samples/quickstart/input/`（合成数据，远小于 500 KB）。
+
+## 输出
+
+- 终端摘要：对上几单、例外几单、政策违规与每日超限天数。
+- 台账：`$DSH_HOME/storages/dsh-travel-recon/exports/travel-ledger.xlsx`，工作表 `Trips` / `Matches`。
+- 原文件不会被修改。
+
+## 示例
+
+直接复制这句话：
+
+> 帮我用自带样例核对这趟差旅的订单、发票和卡流水，列出对不上的单据和超标的天数。
+
+也可以自己跑（真实运行，截图即来自这条命令）：
+
+```sh
+node samples/quickstart/run.mjs
+```
+
+![dsh-travel-recon quickstart 真实运行输出](docs/assets/quickstart.png)
+
+*合成样例 → 金标 `samples/quickstart/expected/result.json`；命令与哈希见 `screenshots.json`。*
+
+## 权限
+
+- 读：你指定的差旅行程 / 发票 / 卡流水 CSV（由会话读取后作为参数传入）；不读其他目录
+- 写：`$DSH_HOME/storages/dsh-travel-recon`（匹配状态与 `exports/*.xlsx`）；不改原文件
+- 联网：否（源码中没有 HTTP / DNS / WebSocket 调用）
+- 外部系统：无（不连接报销 / 差旅平台，不上传数据）
+
+写文件的工具标 **R1（本地写）**，只读工具标 **R0**；逐项见下方工具表。
+
+## FAQ
+
+### 装不上怎么办？
+
+确认 DSH `>=0.2.1-rc.3 <0.4.0`、Node `>=24.9 <25`，并用全新的 `DSH_HOME` 重试；完整步骤见 `TROUBLESHOOTING.md`。
+
+### 为什么有的行程显示 `card_missing`？
+
+该行程在卡流水里没有对应 `trip_id` 的记录，或金额差超过 0.01；先补卡流水，或人工确认是否个人垫付。
+
+### 政策检查会改单据或自动审批吗？
+
+不会。`travel.policy_check` / `travel.daily_limit_check` / `travel.reuse_check` 都是只读，只返回违规清单；是否批准由你决定。
+
+### 能处理我的真实差旅数据吗？
+
+可以本地运行，但本包是 alpha、只用合成数据验证，不构成审计结论；使用真实数据前请脱敏。
+
+## 版本
+
+- 当前版本：`0.1.0-alpha.13`（与 `package.json` 一致）
+- 测试：`node --test test/*.test.mjs` 全绿（25 个用例，0 失败）
+
 ## 安装
 
 安装并验证：
@@ -75,10 +144,12 @@ dsh plugin --profile <profile> remove dsh-travel-recon
 | 工具 | 用途 | 风险 |
 |---|---|---|
 | `travel.ingest` | 导入差旅订单/发票/卡账单行 | R1 local write |
-| `travel.match` | 对订单/发票/卡账单执行三单匹配 | R0 |
+| `travel.match` | 对订单/发票/卡账单执行三单匹配（写入匹配状态） | R1 local write |
 | `travel.duplicate_check` | 按行程检测重复的发票/卡账单 | R0 |
 | `travel.policy_check` | 只读的金额上限与发票存在性策略检查 | R0 |
 | `travel.export` | 导出对账台账 xlsx | R1 local write |
+| `travel.reuse_check` | 只读的跨行程发票/卡流水重复使用检查 | R0 |
+| `travel.daily_limit_check` | 只读的每位员工每日限额检查 | R0 |
 
 ## 快速开始
 
@@ -87,21 +158,18 @@ dsh plugin --profile <profile> add dsh-travel-recon
 dsh --profile <profile> --dump-config | grep dsh-travel-recon
 ```
 
-## 示例
+## 验收示例（快速开始）
 
-### fixture 支撑的示例
-
-输入: [`ACCEPTANCE.csv`](https://github.com/PerryLink/dsh-travel-recon/blob/main/ACCEPTANCE.csv)
-
-命令: `pnpm test`
-
-验收行:
+- 快速开始：`samples/quickstart/`（合成数据）→ `node samples/quickstart/run.mjs`，金标 `samples/quickstart/expected/result.json`。
+- 本包不附公开 fixture，样例即验收输入。
+- 验收：`node scripts/acceptance.mjs`，明细见 `ACCEPTANCE.csv`。
 
 | req_id | metric | threshold | actual | pass | source | counted |
 |---|---|---|---|---|---|---|
 | SKU-15-A01 | 行程解析 | 20/20 | 20 | true | public/synthetic | false |
+| PS1-QS01 | quickstart 样例与金标一致 | 1/1 | 1 | true | synthetic/quickstart | true |
 
-*这是 fixture 支撑的验收行，不是客户运行；没有编造输出。*
+*SKU 行是合成数据检查；PS1-QS01 是随包样例的本地复现，均非客户运行。*
 
 ## 边界
 
@@ -112,7 +180,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 
 ## 公开样例
 
-公开/合成 fixture 在 `fixtures/`；`ACCEPTANCE.csv` 记录公开检查，全部 `counted=false`。
+自带快速开始样例在 `samples/quickstart/`（随包发布，≤500 KB）；本包不含公开 fixture。`ACCEPTANCE.csv` 中 SKU 行 `counted=false`，PS1-QS01 为样例本地复现 `counted=true`。
 
 ## 开发
 
