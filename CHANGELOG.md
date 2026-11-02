@@ -1,6 +1,11 @@
 # Changelog
 
-## [0.1.0-alpha.11] — 2026-11-01
+## [0.1.0-alpha.12] — 2026-11-01
+
+### Security / Fixes
+
+- Path-traversal guard, duplicate trip ids kept and reported instead of overwriting, header validation, per-day cap unaffected by duplicates.
+
 
 ### Added
 
