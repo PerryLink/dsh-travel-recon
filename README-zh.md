@@ -103,7 +103,7 @@ node samples/quickstart/run.mjs
 
 ## 版本
 
-- 当前版本：`0.1.0-alpha.13`（与 `package.json` 一致）
+- 当前版本：`0.1.0-alpha.14`（与 `package.json` 一致）
 - 测试：`node --test test/*.test.mjs` 全绿（25 个用例，0 失败）
 
 ## 安装
