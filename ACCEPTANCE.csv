@@ -1,8 +1,8 @@
 req_id,metric,threshold,actual,script,evidence_sha256,pass,source,counted
-SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,54e928cc437a1e983c39d927f01bb95a654bdac256d384f7fef4a38a8c54cb34,true,public/synthetic,false
-SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,54e928cc437a1e983c39d927f01bb95a654bdac256d384f7fef4a38a8c54cb34,true,public/synthetic,false
-SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,54e928cc437a1e983c39d927f01bb95a654bdac256d384f7fef4a38a8c54cb34,true,public/synthetic,false
-SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,54e928cc437a1e983c39d927f01bb95a654bdac256d384f7fef4a38a8c54cb34,true,public/synthetic,false
-SKU-15-A05,重复发票检测,1,1,scripts/acceptance.mjs,54e928cc437a1e983c39d927f01bb95a654bdac256d384f7fef4a38a8c54cb34,true,public/synthetic,false
-SKU-15-A06,跨行程重复报销,1,1,scripts/acceptance.mjs,54e928cc437a1e983c39d927f01bb95a654bdac256d384f7fef4a38a8c54cb34,true,public/synthetic,false
-SKU-15-A07,每日限额超标,1,1,scripts/acceptance.mjs,54e928cc437a1e983c39d927f01bb95a654bdac256d384f7fef4a38a8c54cb34,true,public/synthetic,false
+SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,56e84ad5113ee971aefba505ecaaaf311df42e5a4c18cdb58c0258216882e899,true,public/synthetic,false
+SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,56e84ad5113ee971aefba505ecaaaf311df42e5a4c18cdb58c0258216882e899,true,public/synthetic,false
+SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,56e84ad5113ee971aefba505ecaaaf311df42e5a4c18cdb58c0258216882e899,true,public/synthetic,false
+SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,56e84ad5113ee971aefba505ecaaaf311df42e5a4c18cdb58c0258216882e899,true,public/synthetic,false
+SKU-15-A05,重复发票检测,1,1,scripts/acceptance.mjs,56e84ad5113ee971aefba505ecaaaf311df42e5a4c18cdb58c0258216882e899,true,public/synthetic,false
+SKU-15-A06,跨行程重复报销,1,1,scripts/acceptance.mjs,56e84ad5113ee971aefba505ecaaaf311df42e5a4c18cdb58c0258216882e899,true,public/synthetic,false
+SKU-15-A07,每日限额超标,1,1,scripts/acceptance.mjs,56e84ad5113ee971aefba505ecaaaf311df42e5a4c18cdb58c0258216882e899,true,public/synthetic,false
