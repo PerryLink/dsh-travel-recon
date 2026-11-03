@@ -1,9 +1,9 @@
 req_id,metric,threshold,actual,script,evidence_sha256,pass,source,counted
-SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,03d6a278b3cfabf94010bab4db92b17f1265b614bc52447fb9e610bb2233617b,true,public/synthetic,false
-SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,03d6a278b3cfabf94010bab4db92b17f1265b614bc52447fb9e610bb2233617b,true,public/synthetic,false
-SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,03d6a278b3cfabf94010bab4db92b17f1265b614bc52447fb9e610bb2233617b,true,public/synthetic,false
-SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,03d6a278b3cfabf94010bab4db92b17f1265b614bc52447fb9e610bb2233617b,true,public/synthetic,false
-SKU-15-A05,重复发票检测,1,1,scripts/acceptance.mjs,03d6a278b3cfabf94010bab4db92b17f1265b614bc52447fb9e610bb2233617b,true,public/synthetic,false
-SKU-15-A06,跨行程重复报销,1,1,scripts/acceptance.mjs,03d6a278b3cfabf94010bab4db92b17f1265b614bc52447fb9e610bb2233617b,true,public/synthetic,false
-SKU-15-A07,每日限额超标,1,1,scripts/acceptance.mjs,03d6a278b3cfabf94010bab4db92b17f1265b614bc52447fb9e610bb2233617b,true,public/synthetic,false
+SKU-15-A01,行程解析,20/20,20,scripts/acceptance.mjs,c6c750abe36fb65d07cfeca35162773cdc443f2c1a729314a817ee4cc20e5afd,true,public/synthetic,false
+SKU-15-A02,三方匹配,20/20,20,scripts/acceptance.mjs,c6c750abe36fb65d07cfeca35162773cdc443f2c1a729314a817ee4cc20e5afd,true,public/synthetic,false
+SKU-15-A03,重复行程,0,0,scripts/acceptance.mjs,c6c750abe36fb65d07cfeca35162773cdc443f2c1a729314a817ee4cc20e5afd,true,public/synthetic,false
+SKU-15-A04,台账 sheet,2,2,scripts/acceptance.mjs,c6c750abe36fb65d07cfeca35162773cdc443f2c1a729314a817ee4cc20e5afd,true,public/synthetic,false
+SKU-15-A05,重复发票检测,1,1,scripts/acceptance.mjs,c6c750abe36fb65d07cfeca35162773cdc443f2c1a729314a817ee4cc20e5afd,true,public/synthetic,false
+SKU-15-A06,跨行程重复报销,1,1,scripts/acceptance.mjs,c6c750abe36fb65d07cfeca35162773cdc443f2c1a729314a817ee4cc20e5afd,true,public/synthetic,false
+SKU-15-A07,每日限额超标,1,1,scripts/acceptance.mjs,c6c750abe36fb65d07cfeca35162773cdc443f2c1a729314a817ee4cc20e5afd,true,public/synthetic,false
 PS1-QS01,quickstart 样例与金标一致,1/1,1,scripts/acceptance.mjs,e95e52055a021bc54abf3b62384542d71e318cb7fcbdf6b40f5e9206ec707e65,true,synthetic/quickstart,true
