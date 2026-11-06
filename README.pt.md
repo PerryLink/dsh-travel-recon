@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-light.svg" width="100%" alt="Fluxo de dados do dsh-travel-recon: CSV de viagens/faturas/cartões → travel.ingest → travel.match (±0.01) → travel.export → travel-ledger.xlsx (Trips/Matches); as verificações somente leitura ficam à parte, sem chamada ao modelo e sem rede">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-hero-en-dark.webp">
+  <img src="docs/assets/dsh-travel-recon-hero-en-light.webp" width="100%" alt="Banner do dsh-travel-recon: à esquerda o título e duas linhas de valor; à direita um cartão de conciliação do TRIP-1003 — ordem 2 450.00, fatura 2 400.00 e cartão 2 400.00 lado a lado, com Δ1 -50.00 fora da faixa ±0.01 e Δ2 0.00 dentro dela, estado amount_mismatch; abaixo do cartão, TRIP-1001 e TRIP-1002 matched e TRIP-1004 card_missing; números da amostra sintética do quickstart">
 </picture>
 
 # dsh-travel-recon
@@ -38,6 +38,11 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 - **Encaixa bem**: dezenas a centenas de viagens, faturas e lançamentos; você quer conciliação por viagem, avisos de duplicidade e um livro local de limites diários.
 - **Não encaixa**: cenários que exigem aprovação automática, pagamento ou alteração de formulários de despesa; este pacote só faz verificações somente leitura e exportação local — não aprova nada por você.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="Estrutura do dsh-travel-recon: três CSV (4 viagens, 5 faturas, 3 cartões) alinhados por trip_id pelo travel.ingest numa matriz de conciliação por viagem, com colunas de ordem / fatura / cartão e duas diferenças com sinal no meio, Δ1 = fatura - ordem e Δ2 = cartão - fatura, ambas limitadas a ±0.01; a matriz distribui-se em quatro estados — matched 2 para a folha Matches, amount_mismatch (TRIP-1003, Δ1 -50.00) e card_missing (TRIP-1004, Δ2 -320.00) para a lista de exceções; a faixa R1 de escrita local ingest → match → export grava exports/travel-ledger.xlsx (Trips / Matches) e a faixa R0 somente leitura duplicate / policy / reuse / daily_limit só devolve listas; o CSV original fica intacto, sem rede e sem modelo">
+</picture>
 
 ## Instalação em três passos
 
@@ -317,7 +322,7 @@ Versão atual `0.1.1` (igual ao `package.json`); `node --test test/*.test.mjs` p
 python scripts/gen-readme-assets.py
 ```
 
-Ele reescreve `docs/assets/dsh-travel-recon-flow-{light,dark}.svg` e enquadra a captura real do quickstart como `dsh-travel-recon-quickstart-{light,dark}.webp`.
+Gera `dsh-travel-recon-hero-{zh,en}-{light,dark}.webp` (banners de 1440×576) e `dsh-travel-recon-flow-v5-{light,dark}.svg` (diagramas de estrutura de 1100×660), e enquadra a captura real do quickstart como `dsh-travel-recon-quickstart-{light,dark}.webp`.
 
 ## Família e agradecimentos
 

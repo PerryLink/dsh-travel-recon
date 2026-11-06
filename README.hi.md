@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-light.svg" width="100%" alt="dsh-travel-recon डेटा फ़्लो: यात्रा/इनवॉइस/कार्ड CSV → travel.ingest → travel.match (±0.01) → travel.export → travel-ledger.xlsx (Trips/Matches); केवल-पढ़ने वाली जाँचें अलग हैं, कोई मॉडल कॉल नहीं और कोई नेटवर्क नहीं">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-hero-en-dark.webp">
+  <img src="docs/assets/dsh-travel-recon-hero-en-light.webp" width="100%" alt="dsh-travel-recon बैनर: बाईं ओर शीर्षक और दो मूल्य पंक्तियाँ; दाईं ओर TRIP-1003 का मिलान कार्ड — ऑर्डर 2 450.00, इनवॉइस 2 400.00 और कार्ड 2 400.00 साथ-साथ, Δ1 -50.00 ±0.01 बैंड से बाहर और Δ2 0.00 भीतर, स्थिति amount_mismatch; कार्ड के नीचे TRIP-1001 और TRIP-1002 matched तथा TRIP-1004 card_missing; संख्याएँ quickstart सिंथेटिक नमूने से">
 </picture>
 
 # dsh-travel-recon
@@ -38,6 +38,11 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 - **किसके लिए ठीक है**: दसियों से सैकड़ों यात्राएँ, इनवॉइस और कार्ड पंक्तियाँ; आपको प्रति-यात्रा मिलान, दोहरे दावे के संकेत और लोकल दैनिक-सीमा बही चाहिए।
 - **किसके लिए नहीं**: स्वचालित स्वीकृति, भुगतान या व्यय फ़ॉर्म में बदलाव चाहने वाले परिदृश्य; यह पैकेज केवल केवल-पढ़ने वाली जाँच और लोकल निर्यात करता है — आपके लिए कुछ स्वीकृत नहीं करता।
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon संरचना: तीन CSV (4 यात्राएँ, 5 इनवॉइस, 3 कार्ड पंक्तियाँ) travel.ingest द्वारा trip_id पर संरेखित होकर प्रति-यात्रा मिलान मैट्रिक्स बनाते हैं, जिसमें ऑर्डर / इनवॉइस / कार्ड स्तंभ और बीच में दो चिह्नित अंतर Δ1 = इनवॉइस - ऑर्डर तथा Δ2 = कार्ड - इनवॉइस हैं, दोनों ±0.01 की सीमा में; मैट्रिक्स चार स्थितियों में बँटता है — matched 2 Matches शीट में, amount_mismatch (TRIP-1003, Δ1 -50.00) और card_missing (TRIP-1004, Δ2 -320.00) अपवाद सूची में; R1 लोकल-राइट रेल ingest → match → export, exports/travel-ledger.xlsx (Trips / Matches) लिखती है और R0 केवल-पढ़ने वाली रेल duplicate / policy / reuse / daily_limit केवल सूचियाँ लौटाती है; मूल CSV अपरिवर्तित, कोई नेटवर्क नहीं और कोई मॉडल कॉल नहीं">
+</picture>
 
 ## तीन चरणों में शुरुआत
 
@@ -317,7 +322,7 @@ cordis.patch.yml        bundle patch (केवल इस प्लगइन क
 python scripts/gen-readme-assets.py
 ```
 
-यह `docs/assets/dsh-travel-recon-flow-{light,dark}.svg` फिर से लिखता है और वास्तविक quickstart कैप्चर को `dsh-travel-recon-quickstart-{light,dark}.webp` के रूप में फ़्रेम करता है।
+यह `dsh-travel-recon-hero-{zh,en}-{light,dark}.webp` (1440×576 बैनर) और `dsh-travel-recon-flow-v5-{light,dark}.svg` (1100×660 संरचना चित्र) बनाता है, तथा वास्तविक quickstart कैप्चर को `dsh-travel-recon-quickstart-{light,dark}.webp` के रूप में फ़्रेम करता है।
 
 ## परिवार और आभार
 

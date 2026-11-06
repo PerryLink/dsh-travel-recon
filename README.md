@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-light.svg" width="100%" alt="dsh-travel-recon 数据流：trips/invoices/cards CSV → travel.ingest → travel.match（±0.01）→ travel.export → travel-ledger.xlsx（Trips/Matches）；只读检查另列，全程不调模型、不联网">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-hero-zh-dark.webp">
+  <img src="docs/assets/dsh-travel-recon-hero-zh-light.webp" width="100%" alt="dsh-travel-recon 横幅：左侧标题与两行价值句；右侧是对账卡，TRIP-1003 的订单 2 450.00、发票 2 400.00、卡流水 2 400.00 并列，两段分差 Δ1 -50.00 超出 ±0.01 容差、Δ2 0.00 命中，状态 amount_mismatch；卡片下方是 TRIP-1001 与 TRIP-1002 matched、TRIP-1004 card_missing；数据取自 quickstart 合成样例">
 </picture>
 
 # dsh-travel-recon
@@ -38,6 +38,11 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 - **适合**：几十到几百条差旅行程、发票和卡流水；需要一份逐单对账、重复报销提示和每日限额超标的本地台账。
 - **不适合**：需要自动审批、打款或修改报销单的场景；本包只做只读检查与本地导出，不替你批准。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon 结构：三份 CSV（行程 4 行、发票 5 行、卡流水 3 行）由 travel.ingest 按 trip_id 对齐成逐趟对账矩阵，每趟并列订单 / 发票 / 卡流水三列，中间夹着两段带符号分差 Δ1 = 发票 − 订单、Δ2 = 卡流水 − 发票，两段都以 ±0.01 元为界；矩阵结果按四态分派——matched 2 趟进 Matches 表，amount_mismatch（TRIP-1003，Δ1 -50.00）与 card_missing（TRIP-1004，Δ2 -320.00）进例外清单，invoice_missing 0 趟；R1 本地写轨 ingest → match → export 写 exports/travel-ledger.xlsx（Trips / Matches），R0 只读轨 duplicate / policy / reuse / daily_limit 只返回清单；原 CSV 只读、不联网、不调模型">
+</picture>
 
 ## 三步上手
 
@@ -317,7 +322,7 @@ cordis.patch.yml        bundle patch（只 insert 本插件一行）
 python scripts/gen-readme-assets.py
 ```
 
-它会重写 `docs/assets/dsh-travel-recon-flow-{light,dark}.svg`，并把真实的 quickstart 截图框成 `dsh-travel-recon-quickstart-{light,dark}.webp` 两个版本。
+它生成 `dsh-travel-recon-hero-{zh,en}-{light,dark}.webp`（1440×576 横幅）与 `dsh-travel-recon-flow-v5-{light,dark}.svg`（1100×660 结构图），并把真实的 quickstart 截图框成 `dsh-travel-recon-quickstart-{light,dark}.webp`。
 
 ## 家族与致谢
 

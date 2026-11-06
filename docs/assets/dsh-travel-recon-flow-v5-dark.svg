@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-label="dsh-travel-recon 结构：三份 CSV（行程 4 行、发票 5 行、卡流水 3 行）由 travel.ingest 按 trip_id 对齐成逐趟对账矩阵，每趟并列订单 / 发票 / 卡流水三列，中间是两段带符号分差 Δ1 = 发票 − 订单、Δ2 = 卡流水 − 发票，两段都以 ±0.01 元（1 分）为界；矩阵结果按四态分派——matched 2 趟进 Matches 表，amount_mismatch（TRIP-1003，Δ1 -50.00）与 card_missing（TRIP-1004，Δ2 -320.00）进例外清单，invoice_missing 为 0；R1 本地写轨的 ingest → match → export 写 storages/dsh-travel-recon/exports/travel-ledger.xlsx（Trips / Matches），R0 只读轨的 duplicate / policy / reuse / daily_limit 只返回清单；原 CSV 只读，不联网、不调模型。">
+<title>dsh-travel-recon: per-trip reconciliation matrix with two gap columns, four-state dispatch, R1 write / R0 read rails</title>
+<rect width="1100" height="660" fill="#161e2f"/>
+<text x="40.0" y="60.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="30.00" font-weight="700" text-anchor="start">dsh-travel-recon</text>
+<text x="40.0" y="88.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="15.00" font-weight="400" text-anchor="start">三份 CSV 逐趟对账：一个 trip_id、两段分差、四态分派</text>
+<rect x="891.0" y="40.0" width="169.0" height="28.0" rx="14.0" fill="#232c49" stroke="#8496f555" stroke-width="1.10"/>
+<text x="975.5" y="58.5" fill="#8496f5" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.5" font-weight="400" text-anchor="middle">v0.1.1 · 不联网 · 不调模型</text>
+<line x1="40.0" y1="102.0" x2="1060.0" y2="102.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<text x="40.0" y="128.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="16.50" font-weight="700" text-anchor="start">① 逐趟对账矩阵 · travel.ingest 按 trip_id 对齐三份 CSV（4 / 5 / 3 行）</text>
+<text x="1060.0" y="128.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="end">两段分差各以 ±0.01 元（1 分）为界</text>
+<rect x="40.0" y="142.0" width="1020.0" height="44.0" rx="10.0" fill="#1c2539"/>
+<text x="52.0" y="164.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="13.50" font-weight="700" text-anchor="start">trip_id</text>
+<text x="52.0" y="180.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">键 key</text>
+<text x="188.0" y="164.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="13.50" font-weight="700" text-anchor="start">订单 trips</text>
+<text x="188.0" y="180.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">trips.csv · 4 行</text>
+<text x="330.0" y="164.0" fill="#8496f5" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="16.00" font-weight="700" text-anchor="start">Δ1</text>
+<text x="330.0" y="180.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">订单→发票</text>
+<text x="440.0" y="164.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="13.50" font-weight="700" text-anchor="start">发票 invoices</text>
+<text x="440.0" y="180.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">invoices.csv · 5 行</text>
+<text x="582.0" y="164.0" fill="#8496f5" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="16.00" font-weight="700" text-anchor="start">Δ2</text>
+<text x="582.0" y="180.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">发票→卡流水</text>
+<text x="692.0" y="164.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="13.50" font-weight="700" text-anchor="start">卡流水 cards</text>
+<text x="692.0" y="180.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">cards.csv · 3 行</text>
+<text x="834.0" y="164.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="13.50" font-weight="700" text-anchor="start">状态 state</text>
+<text x="834.0" y="180.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">4 态 · travel.match</text>
+<rect x="40.0" y="186.0" width="1020.0" height="52.0" rx="9.0" fill="#1a2234"/>
+<rect x="40.0" y="298.0" width="1020.0" height="52.0" rx="9.0" fill="#1a2234"/>
+<rect x="318.0" y="186.0" width="110.0" height="220.0" rx="0.0" fill="#232c49" opacity="0.42"/>
+<rect x="570.0" y="186.0" width="110.0" height="220.0" rx="0.0" fill="#232c49" opacity="0.42"/>
+<line x1="176.0" y1="142.0" x2="176.0" y2="410.0" stroke="#2a3450" stroke-width="1.00" stroke-linecap="round" stroke-dasharray="3 5" opacity="0.75"/>
+<line x1="318.0" y1="142.0" x2="318.0" y2="410.0" stroke="#2a3450" stroke-width="1.00" stroke-linecap="round" stroke-dasharray="3 5" opacity="0.75"/>
+<line x1="428.0" y1="142.0" x2="428.0" y2="410.0" stroke="#2a3450" stroke-width="1.00" stroke-linecap="round" stroke-dasharray="3 5" opacity="0.75"/>
+<line x1="570.0" y1="142.0" x2="570.0" y2="410.0" stroke="#2a3450" stroke-width="1.00" stroke-linecap="round" stroke-dasharray="3 5" opacity="0.75"/>
+<line x1="680.0" y1="142.0" x2="680.0" y2="410.0" stroke="#2a3450" stroke-width="1.00" stroke-linecap="round" stroke-dasharray="3 5" opacity="0.75"/>
+<line x1="822.0" y1="142.0" x2="822.0" y2="410.0" stroke="#2a3450" stroke-width="1.00" stroke-linecap="round" stroke-dasharray="3 5" opacity="0.75"/>
+<line x1="40.0" y1="410.0" x2="1060.0" y2="410.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<text x="52.0" y="207.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="15.00" font-weight="700" text-anchor="start">TRIP-1001</text>
+<text x="52.0" y="224.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">PEK→SHA</text>
+<text x="306.0" y="208.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">1 280.00</text>
+<text x="306.0" y="224.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">EMP-01 · 04-01</text>
+<text x="373.0" y="207.0" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">0.00</text>
+<line x1="341.0" y1="220.0" x2="405.0" y2="220.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="367.0" y="216.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="341.0" y1="217.2" x2="341.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="357.0" y1="217.2" x2="357.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="373.0" y1="217.2" x2="373.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="389.0" y1="217.2" x2="389.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="405.0" y1="217.2" x2="405.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="373.0" cy="220.0" r="3.4" fill="#63d29a"/>
+<text x="558.0" y="208.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">1 280.00</text>
+<text x="558.0" y="224.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">INV-2001</text>
+<text x="625.0" y="207.0" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">0.00</text>
+<line x1="593.0" y1="220.0" x2="657.0" y2="220.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="619.0" y="216.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="593.0" y1="217.2" x2="593.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="609.0" y1="217.2" x2="609.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="625.0" y1="217.2" x2="625.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="641.0" y1="217.2" x2="641.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="657.0" y1="217.2" x2="657.0" y2="222.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="625.0" cy="220.0" r="3.4" fill="#63d29a"/>
+<text x="810.0" y="208.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">1 280.00</text>
+<text x="810.0" y="224.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">CARD-3001</text>
+<rect x="832.0" y="194.0" width="69.0" height="24.0" rx="12.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="1.10"/>
+<text x="866.5" y="210.7" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">matched</text>
+<text x="832.0" y="231.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">两段分差均 0.00</text>
+<text x="52.0" y="263.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="15.00" font-weight="700" text-anchor="start">TRIP-1002</text>
+<text x="52.0" y="280.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">SZX→HGH</text>
+<text x="306.0" y="264.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">860.00</text>
+<text x="306.0" y="280.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">EMP-02 · 04-02</text>
+<text x="373.0" y="263.0" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">0.00</text>
+<line x1="341.0" y1="276.0" x2="405.0" y2="276.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="367.0" y="272.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="341.0" y1="273.2" x2="341.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="357.0" y1="273.2" x2="357.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="373.0" y1="273.2" x2="373.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="389.0" y1="273.2" x2="389.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="405.0" y1="273.2" x2="405.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="373.0" cy="276.0" r="3.4" fill="#63d29a"/>
+<text x="558.0" y="264.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">860.00</text>
+<text x="558.0" y="280.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">INV-2002</text>
+<rect x="436.0" y="248.0" width="26.0" height="17.0" rx="8.5" fill="#2a2316" stroke="#f0b95b77" stroke-width="1.00"/>
+<text x="449.0" y="260.5" fill="#f0b95b" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="700" text-anchor="middle">×2</text>
+<text x="625.0" y="263.0" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">0.00</text>
+<line x1="593.0" y1="276.0" x2="657.0" y2="276.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="619.0" y="272.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="593.0" y1="273.2" x2="593.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="609.0" y1="273.2" x2="609.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="625.0" y1="273.2" x2="625.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="641.0" y1="273.2" x2="641.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="657.0" y1="273.2" x2="657.0" y2="278.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="625.0" cy="276.0" r="3.4" fill="#63d29a"/>
+<text x="810.0" y="264.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">860.00</text>
+<text x="810.0" y="280.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">CARD-3002</text>
+<rect x="832.0" y="250.0" width="69.0" height="24.0" rx="12.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="1.10"/>
+<text x="866.5" y="266.7" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">matched</text>
+<text x="832.0" y="287.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">发票另有 1 条（×2）</text>
+<text x="52.0" y="319.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="15.00" font-weight="700" text-anchor="start">TRIP-1003</text>
+<text x="52.0" y="336.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">PEK→CAN</text>
+<text x="306.0" y="320.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">2 450.00</text>
+<text x="306.0" y="336.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">EMP-01 · 04-01</text>
+<text x="373.0" y="319.0" fill="#ff9a94" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">-50.00</text>
+<line x1="341.0" y1="332.0" x2="405.0" y2="332.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="367.0" y="328.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="341.0" y1="329.2" x2="341.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="357.0" y1="329.2" x2="357.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="373.0" y1="329.2" x2="373.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="389.0" y1="329.2" x2="389.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="405.0" y1="329.2" x2="405.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="345.0" cy="332.0" r="3.4" fill="#ff9a94"/>
+<text x="558.0" y="320.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">2 400.00</text>
+<text x="558.0" y="336.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">INV-2003</text>
+<text x="625.0" y="319.0" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">0.00</text>
+<line x1="593.0" y1="332.0" x2="657.0" y2="332.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="619.0" y="328.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="593.0" y1="329.2" x2="593.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="609.0" y1="329.2" x2="609.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="625.0" y1="329.2" x2="625.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="641.0" y1="329.2" x2="641.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="657.0" y1="329.2" x2="657.0" y2="334.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="625.0" cy="332.0" r="3.4" fill="#63d29a"/>
+<text x="810.0" y="320.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">2 400.00</text>
+<text x="810.0" y="336.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">CARD-3003</text>
+<rect x="832.0" y="306.0" width="125.0" height="24.0" rx="12.0" fill="#2a1a1d" stroke="#ff9a9466" stroke-width="1.10"/>
+<text x="894.5" y="322.7" fill="#ff9a94" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">amount_mismatch</text>
+<text x="832.0" y="343.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">Δ1 超差 -5 000 分</text>
+<text x="52.0" y="375.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="15.00" font-weight="700" text-anchor="start">TRIP-1004</text>
+<text x="52.0" y="392.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">CTU→XIY</text>
+<text x="306.0" y="376.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">320.00</text>
+<text x="306.0" y="392.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">EMP-03 · 04-03</text>
+<text x="373.0" y="375.0" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">0.00</text>
+<line x1="341.0" y1="388.0" x2="405.0" y2="388.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="367.0" y="384.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="341.0" y1="385.2" x2="341.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="357.0" y1="385.2" x2="357.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="373.0" y1="385.2" x2="373.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="389.0" y1="385.2" x2="389.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="405.0" y1="385.2" x2="405.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="373.0" cy="388.0" r="3.4" fill="#63d29a"/>
+<text x="558.0" y="376.0" fill="#eef1fb" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">320.00</text>
+<text x="558.0" y="392.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="end">INV-2005</text>
+<text x="625.0" y="375.0" fill="#ff9a94" font-family="Consolas, 'Courier New', monospace" font-size="13.50" font-weight="400" text-anchor="middle">-320.00</text>
+<line x1="593.0" y1="388.0" x2="657.0" y2="388.0" stroke="#2a3450" stroke-width="1.20" stroke-linecap="round"/>
+<rect x="619.0" y="384.0" width="12.0" height="8.0" rx="2.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="0.90"/>
+<line x1="593.0" y1="385.2" x2="593.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="609.0" y1="385.2" x2="609.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="625.0" y1="385.2" x2="625.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="641.0" y1="385.2" x2="641.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<line x1="657.0" y1="385.2" x2="657.0" y2="390.8" stroke="#7a849d" stroke-width="0.90" stroke-linecap="round"/>
+<circle cx="597.0" cy="388.0" r="3.4" fill="#ff9a94"/>
+<text x="810.0" y="376.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="14.50" font-weight="400" text-anchor="end">—</text>
+<text x="810.0" y="392.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="end">无卡流水</text>
+<rect x="832.0" y="362.0" width="104.0" height="24.0" rx="12.0" fill="#2a1a1d" stroke="#ff9a9466" stroke-width="1.10"/>
+<text x="884.0" y="378.7" fill="#ff9a94" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">card_missing</text>
+<text x="832.0" y="399.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">Δ2 无卡流水 -32 000 分</text>
+<text x="40.0" y="428.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="14.50" font-weight="700" text-anchor="start">② 状态分派 · 每趟只取 1 张发票 + 1 笔卡流水（1:1）</text>
+<text x="1060.0" y="428.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="end">状态由 travel.match 写入 Matches 表</text>
+<line x1="550.0" y1="410.0" x2="550.0" y2="434.0" stroke="#2a3450" stroke-width="1.40" stroke-linecap="round"/>
+<line x1="166.0" y1="434.0" x2="934.0" y2="434.0" stroke="#2a3450" stroke-width="1.40" stroke-linecap="round"/>
+<line x1="166.0" y1="434.0" x2="166.0" y2="440.0" stroke="#2a3450" stroke-width="1.40" stroke-linecap="round"/>
+<circle cx="166.0" cy="434.0" r="2.6" fill="#2a3450"/>
+<line x1="422.0" y1="434.0" x2="422.0" y2="440.0" stroke="#2a3450" stroke-width="1.40" stroke-linecap="round"/>
+<circle cx="422.0" cy="434.0" r="2.6" fill="#2a3450"/>
+<line x1="678.0" y1="434.0" x2="678.0" y2="440.0" stroke="#2a3450" stroke-width="1.40" stroke-linecap="round"/>
+<circle cx="678.0" cy="434.0" r="2.6" fill="#2a3450"/>
+<line x1="934.0" y1="434.0" x2="934.0" y2="440.0" stroke="#2a3450" stroke-width="1.40" stroke-linecap="round"/>
+<circle cx="934.0" cy="434.0" r="2.6" fill="#2a3450"/>
+<circle cx="550.0" cy="434.0" r="2.6" fill="#2a3450"/>
+<rect x="40.0" y="440.0" width="252.0" height="82.0" rx="14.0" fill="#1a2234" stroke="#2a3450" stroke-width="1.10"/>
+<rect x="40.0" y="440.0" width="252.0" height="3.0" rx="1.5" fill="#63d29a" opacity="0.85"/>
+<rect x="52.0" y="449.0" width="69.0" height="24.0" rx="12.0" fill="#0f2c25" stroke="#63d29a66" stroke-width="1.10"/>
+<text x="86.5" y="465.7" fill="#63d29a" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">matched</text>
+<text x="280.0" y="466.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="14.00" font-weight="700" text-anchor="end">2 趟</text>
+<text x="52.0" y="487.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">TRIP-1001 · TRIP-1002</text>
+<text x="52.0" y="506.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">→ Matches 表 · state=matched</text>
+<rect x="296.0" y="440.0" width="252.0" height="82.0" rx="14.0" fill="#1a2234" stroke="#2a3450" stroke-width="1.10"/>
+<rect x="296.0" y="440.0" width="252.0" height="3.0" rx="1.5" fill="#ff9a94" opacity="0.85"/>
+<rect x="308.0" y="449.0" width="125.0" height="24.0" rx="12.0" fill="#2a1a1d" stroke="#ff9a9466" stroke-width="1.10"/>
+<text x="370.5" y="465.7" fill="#ff9a94" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">amount_mismatch</text>
+<text x="536.0" y="466.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="14.00" font-weight="700" text-anchor="end">1 趟</text>
+<text x="308.0" y="487.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">TRIP-1003 · Δ1 -50.00</text>
+<text x="308.0" y="506.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">→ 例外清单 · 附两段分差</text>
+<rect x="552.0" y="440.0" width="252.0" height="82.0" rx="14.0" fill="#1a2234" stroke="#2a3450" stroke-width="1.10"/>
+<rect x="552.0" y="440.0" width="252.0" height="3.0" rx="1.5" fill="#ff9a94" opacity="0.85"/>
+<rect x="564.0" y="449.0" width="104.0" height="24.0" rx="12.0" fill="#2a1a1d" stroke="#ff9a9466" stroke-width="1.10"/>
+<text x="616.0" y="465.7" fill="#ff9a94" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">card_missing</text>
+<text x="792.0" y="466.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="14.00" font-weight="700" text-anchor="end">1 趟</text>
+<text x="564.0" y="487.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">TRIP-1004 · Δ2 -320.00</text>
+<text x="564.0" y="506.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">→ 例外清单 · 补卡流水</text>
+<rect x="808.0" y="440.0" width="252.0" height="82.0" rx="14.0" fill="#1a2234" stroke="#2a3450" stroke-width="1.10"/>
+<rect x="808.0" y="440.0" width="252.0" height="3.0" rx="1.5" fill="#a7b1c9" opacity="0.85"/>
+<rect x="820.0" y="449.0" width="125.0" height="24.0" rx="12.0" fill="#1c2539" stroke="#2a3450" stroke-width="1.10"/>
+<text x="882.5" y="465.7" fill="#a7b1c9" font-family="Consolas, 'Courier New', monospace" font-size="13.00" font-weight="700" text-anchor="middle">invoice_missing</text>
+<text x="1048.0" y="466.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="14.00" font-weight="700" text-anchor="end">0 趟</text>
+<text x="820.0" y="487.0" fill="#7a849d" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">本次样例未出现</text>
+<text x="820.0" y="506.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">→ 缺发票时落这里</text>
+<rect x="40.0" y="528.0" width="484.0" height="100.0" rx="16.0" fill="#1a2234" stroke="#2a3450" stroke-width="1.10"/>
+<rect x="40.0" y="528.0" width="3.0" height="100.0" rx="1.5" fill="#8496f5" opacity="0.90"/>
+<text x="58.0" y="549.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="14.00" font-weight="700" text-anchor="start">R1 · 本地写 3 个工具</text>
+<text x="58.0" y="568.0" fill="#8496f5" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">travel.ingest → travel.match → travel.export</text>
+<text x="58.0" y="585.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">storages/dsh-travel-recon/exports/travel-ledger.xlsx</text>
+<text x="58.0" y="601.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">Trips 5 行 · Matches 5 行 · 原 CSV 只读</text>
+<text x="58.0" y="617.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">safeExportPath：越界 / 非法路径直接失败</text>
+<rect x="532.0" y="528.0" width="528.0" height="100.0" rx="16.0" fill="#1a2234" stroke="#2a3450" stroke-width="1.10"/>
+<rect x="532.0" y="528.0" width="3.0" height="100.0" rx="1.5" fill="#8496f5" opacity="0.90"/>
+<text x="550.0" y="549.0" fill="#eef1fb" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="14.00" font-weight="700" text-anchor="start">R0 · 只读 4 个工具（只列清单，不改单、不审批）</text>
+<text x="550.0" y="568.0" fill="#8496f5" font-family="Consolas, 'Courier New', monospace" font-size="12.00" font-weight="400" text-anchor="start">duplicate_check · policy_check · reuse_check · daily_limit</text>
+<text x="550.0" y="585.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">duplicate 1 张（TRIP-1002 发票 ×2，保留不合并）· reuse 0</text>
+<text x="550.0" y="601.0" fill="#a7b1c9" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">policy 1：TRIP-1003 2 450.00 &gt; 上限 2 000.00</text>
+<text x="550.0" y="617.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">daily 1 天：EMP-01 04-01 合计 3 730.00（超 730.00）</text>
+<text x="40.0" y="648.0" fill="#7a849d" font-family="'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif" font-size="12.00" font-weight="400" text-anchor="start">原 CSV 只读 · 导出前经 safeExportPath 校验 · 不联网 · 不调模型 · 不上传</text>
+</svg>

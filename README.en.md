@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-light.svg" width="100%" alt="dsh-travel-recon data flow: trips/invoices/cards CSV → travel.ingest → travel.match (±0.01) → travel.export → travel-ledger.xlsx (Trips/Matches); read-only checks sit aside, no model call and no network">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-hero-en-dark.webp">
+  <img src="docs/assets/dsh-travel-recon-hero-en-light.webp" width="100%" alt="dsh-travel-recon banner: title and two value lines on the left; on the right a reconciliation card for TRIP-1003 — order 2,450.00, invoice 2,400.00 and card 2,400.00 side by side, with Δ1 -50.00 outside the ±0.01 band and Δ2 0.00 inside it, state amount_mismatch; below the card, TRIP-1001 and TRIP-1002 matched and TRIP-1004 card_missing; numbers from the synthetic quickstart sample">
 </picture>
 
 # dsh-travel-recon
@@ -38,6 +38,11 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 - **Good fit**: tens to hundreds of trips, invoices and card rows; you want a per-trip reconciliation, duplicate-claim flags and a local daily-limit ledger.
 - **Bad fit**: scenarios that need automatic approval, payment or edits to expense forms; this package only does read-only checks and local export — it does not approve anything for you.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon structure: three CSVs (4 trips, 5 invoices, 3 cards) keyed by trip_id through travel.ingest into a per-trip reconciliation matrix with order / invoice / card columns and two signed gaps in between, Δ1 = invoice - order and Δ2 = card - invoice, both bounded by ±0.01; the matrix dispatches into four states — matched 2 to the Matches sheet, amount_mismatch (TRIP-1003, Δ1 -50.00) and card_missing (TRIP-1004, Δ2 -320.00) to the exception list; the R1 local-write rail ingest → match → export writes exports/travel-ledger.xlsx (Trips / Matches), the R0 read-only rail duplicate / policy / reuse / daily_limit only returns lists; the source CSV stays read-only, with no network and no model call">
+</picture>
 
 ## Three-step setup
 
@@ -317,7 +322,7 @@ Current version `0.1.1` (matches `package.json`); `node --test test/*.test.mjs` 
 python scripts/gen-readme-assets.py
 ```
 
-It rewrites `docs/assets/dsh-travel-recon-flow-{light,dark}.svg` and frames the real quickstart capture as `dsh-travel-recon-quickstart-{light,dark}.webp`.
+It writes `dsh-travel-recon-hero-{zh,en}-{light,dark}.webp` (1440×576 banners) and `dsh-travel-recon-flow-v5-{light,dark}.svg` (1100×660 structure diagrams), and frames the real quickstart capture as `dsh-travel-recon-quickstart-{light,dark}.webp`.
 
 ## Family & thanks
 
