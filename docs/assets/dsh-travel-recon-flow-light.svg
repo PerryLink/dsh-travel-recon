@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-label="dsh-travel-recon pipeline">
+<title>dsh-travel-recon pipeline</title>
+<rect width="1200" height="430" rx="18" fill="#ffffff"/>
+<text x="60" y="62" fill="#1f2328" font-family="ui-sans-serif,system-ui,sans-serif" font-size="30" font-weight="700">dsh-travel-recon</text>
+<text x="60" y="94" fill="#57606a" font-family="ui-monospace,monospace" font-size="16">local CSV → reconcile → xlsx ledger · travel.ingest → travel.match → travel.export</text>
+<line x1="60" y1="116" x2="1140" y2="116" stroke="#d0d7de"/>
+<rect x="60" y="150" width="220" height="96" rx="14" fill="#f6f8fa" stroke="#d0d7de" stroke-width="2"/>
+<text x="170" y="190" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="14" font-weight="700">trips/invoices/cards.csv</text>
+<text x="170" y="218" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">3 source CSV</text>
+<path d="M286 198h48" stroke="#57606a" stroke-width="3"/>
+<path d="M332 191l10 7-10 7" fill="none" stroke="#57606a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="340" y="150" width="220" height="96" rx="14" fill="#f6f8fa" stroke="#4B67B4" stroke-width="2"/>
+<text x="450" y="190" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="14" font-weight="700">travel.ingest</text>
+<text x="450" y="218" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">dedupe + duplicate report</text>
+<path d="M566 198h48" stroke="#57606a" stroke-width="3"/>
+<path d="M612 191l10 7-10 7" fill="none" stroke="#57606a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="620" y="150" width="220" height="96" rx="14" fill="#f6f8fa" stroke="#4B67B4" stroke-width="2"/>
+<text x="730" y="190" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="14" font-weight="700">travel.match</text>
+<text x="730" y="218" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">±0.01 tolerance</text>
+<path d="M846 198h48" stroke="#57606a" stroke-width="3"/>
+<path d="M892 191l10 7-10 7" fill="none" stroke="#57606a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="900" y="150" width="220" height="96" rx="14" fill="#f6f8fa" stroke="#d0d7de" stroke-width="2"/>
+<text x="1010" y="190" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="14" font-weight="700">travel.export</text>
+<text x="1010" y="218" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">xlsx · Trips / Matches</text>
+<rect x="60" y="285" width="1080" height="50" rx="12" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="600" y="316" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13">R0 read-only: travel.duplicate_check · travel.policy_check · travel.reuse_check · travel.daily_limit_check</text>
+<text x="60" y="368" fill="#57606a" font-family="ui-monospace,monospace" font-size="13">storage domain · $DSH_HOME/storages/dsh-travel-recon · exports/travel-ledger.xlsx · original CSV untouched</text>
+<text x="60" y="398" fill="#16a34a" font-family="ui-monospace,monospace" font-size="13">no model call · no network · no upload</text>
+</svg>
