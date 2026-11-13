@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0] — 2026-11-13
+
+### Breaking
+
+- **Tool names no longer contain a dot.** The seven tools are now `travel_ingest`, `travel_match`, `travel_export`, `travel_policy_check`, `travel_duplicate_check`, `travel_reuse_check` and `travel_daily_limit_check`. Providers validate `tools[].name` against `^[a-zA-Z0-9_-]+$`; the old dotted names invalidated the whole `tools` array, so the plugin registered but every request carrying its tools was rejected with `Invalid 'tools[N].name'`. Minor bump because tool names are part of the 0.1.0 compatibility promise — update prompts, saved calls and permission rules that still use the old dotted names.
+- `test/tool-name-wire.test.mjs` pins the wire pattern so a new tool cannot reintroduce a dot or drop the `travel_` namespace.
+- Earlier changelog entries use the new spelling, so a repository-wide search no longer finds dotted tool names.
+
+### Changed
+
+- Documentation: five-language READMEs, the flow diagrams under `docs/assets/`, `samples/quickstart/run.mjs`, the acceptance script and the README-asset generator all use the underscore names; `travel_*` replaces the old `travel.*` namespace notation.
+
 ## [0.1.0] — 2026-11-03
 
 ### Stable
@@ -22,13 +34,13 @@
 
 ### Added
 
-- `travel.daily_limit_check`: per-employee, per-day spend against a daily cap, reporting every over-limit day with its overage. Read-only. Verified by `node --test test/*.test.mjs` (9/9).
+- `travel_daily_limit_check`: per-employee, per-day spend against a daily cap, reporting every over-limit day with its overage. Read-only. Verified by `node --test test/*.test.mjs` (9/9).
 
 ## [Unreleased]
 
 ### Added
 
-- `travel.reuse_check`: pre-ingest cross-trip reuse check that reports invoice IDs and card transaction IDs appearing under more than one trip (the classic double-claim pattern that the current id-keyed ingest would otherwise overwrite). Read-only. Verified by `node --test test/*.test.mjs` (7/7).
+- `travel_reuse_check`: pre-ingest cross-trip reuse check that reports invoice IDs and card transaction IDs appearing under more than one trip (the classic double-claim pattern that the current id-keyed ingest would otherwise overwrite). Read-only. Verified by `node --test test/*.test.mjs` (7/7).
 
 ## [0.1.0-alpha.9] — 2026-11-01
 

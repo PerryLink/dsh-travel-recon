@@ -6,7 +6,7 @@
 
 ### alpha.1 — policy check
 
-- Added `travel.policy_check`; tests 2/2; no approval/write.
+- Added `travel_policy_check`; tests 2/2; no approval/write.
 
 ### alpha.2 — duplicate check
 

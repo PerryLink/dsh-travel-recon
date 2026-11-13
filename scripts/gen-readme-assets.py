@@ -4,16 +4,16 @@
 What the code actually does (src/core/travel.ts, src/plugin/tools.ts,
 samples/quickstart/expected/result.json):
 
-  three CSVs (trips / invoices / cards)  ->  travel.ingest parses them into
+  three CSVs (trips / invoices / cards)  ->  travel_ingest parses them into
   integer cents under one key, trip_id; a repeated trip id is kept and
   reported (E_TRAVEL_TRIP_DUPLICATE), extra rows are counted in `skipped`.
-  travel.match then takes exactly one invoice and one card per trip (1:1) and
+  travel_match then takes exactly one invoice and one card per trip (1:1) and
   computes two signed gaps in cents:
 
       D1 = invoice - order        D2 = card - invoice
 
   both must satisfy |gap| <= 1 cent; otherwise the trip is one of three
-  reasons: amount_mismatch / card_missing / invoice_missing. travel.export
+  reasons: amount_mismatch / card_missing / invoice_missing. travel_export
   writes the Trips + Matches sheets through safeExportPath. Four further
   tools are read-only (duplicate_check, policy_check, reuse_check,
   daily_limit_check) and only return lists.
@@ -312,7 +312,7 @@ HERO = {
         lines=["行程 × 发票 × 卡流水，逐趟对到分",
                "对不上的、重复的、超标的，全列清"],
         sub="三份 CSV 进，两表 xlsx 出 · 不联网 · 不调模型",
-        meta="travel.ingest · travel.match · travel.export · v0.1.1",
+        meta="travel_ingest · travel_match · travel_export · v0.2.0",
         foot="社区插件 · 与 DeepSeek 无关 · 仅公开 / 合成样例",
         panel_head="对账卡 · 逐趟",
         panel_meta="合成样例 · 4 趟 · 单位 元",
@@ -341,7 +341,7 @@ HERO = {
         lines=["Trip, invoice, card — matched per trip",
                "Gaps, double claims, over-limit days, listed"],
         sub="Three CSVs in, one two-sheet xlsx out · offline",
-        meta="travel.ingest · travel.match · travel.export · v0.1.1",
+        meta="travel_ingest · travel_match · travel_export · v0.2.0",
         foot="Community plugin · not affiliated with DeepSeek",
         panel_head="Reconciliation card",
         panel_meta="synthetic · 4 trips · CNY",
@@ -528,11 +528,11 @@ def draw_hero(lang: str, skin: str) -> Image.Image:
 FLOW_TEXT = {
     "title": "dsh-travel-recon",
     "subtitle": "三份 CSV 逐趟对账：一个 trip_id、两段分差、四态分派",
-    "pill": "v0.1.1 · 不联网 · 不调模型",
-    "sec1": "① 逐趟对账矩阵 · travel.ingest 按 trip_id 对齐三份 CSV（4 / 5 / 3 行）",
+    "pill": "v0.2.0 · 不联网 · 不调模型",
+    "sec1": "① 逐趟对账矩阵 · travel_ingest 按 trip_id 对齐三份 CSV（4 / 5 / 3 行）",
     "sec1_note": "两段分差各以 ±0.01 元（1 分）为界",
     "sec2": "② 状态分派 · 每趟只取 1 张发票 + 1 笔卡流水（1:1）",
-    "sec2_note": "状态由 travel.match 写入 Matches 表",
+    "sec2_note": "状态由 travel_match 写入 Matches 表",
     "cols": [
         ("trip_id", "键 key"),
         ("订单 trips", "trips.csv · 4 行"),
@@ -540,7 +540,7 @@ FLOW_TEXT = {
         ("发票 invoices", "invoices.csv · 5 行"),
         ("Δ2", "发票→卡流水"),
         ("卡流水 cards", "cards.csv · 3 行"),
-        ("状态 state", "4 态 · travel.match"),
+        ("状态 state", "4 态 · travel_match"),
     ],
     "rows": [
         ("TRIP-1001", "PEK→SHA", "EMP-01 · 04-01", "1 280.00", 0,
@@ -567,7 +567,7 @@ FLOW_TEXT = {
          "→ 缺发票时落这里"),
     ],
     "r1_head": "R1 · 本地写 3 个工具",
-    "r1_tools": "travel.ingest → travel.match → travel.export",
+    "r1_tools": "travel_ingest → travel_match → travel_export",
     "r1_path": "storages/dsh-travel-recon/exports/travel-ledger.xlsx",
     "r1_counts": "Trips 5 行 · Matches 5 行 · 原 CSV 只读",
     "r1_note": "safeExportPath：越界 / 非法路径直接失败",
@@ -579,7 +579,7 @@ FLOW_TEXT = {
     "foot": "原 CSV 只读 · 导出前经 safeExportPath 校验 · 不联网 · 不调模型 · 不上传",
     "alt": (
         "dsh-travel-recon 结构：三份 CSV（行程 4 行、发票 5 行、卡流水 3 行）"
-        "由 travel.ingest 按 trip_id 对齐成逐趟对账矩阵，每趟并列订单 / 发票 / "
+        "由 travel_ingest 按 trip_id 对齐成逐趟对账矩阵，每趟并列订单 / 发票 / "
         "卡流水三列，中间是两段带符号分差 Δ1 = 发票 − 订单、Δ2 = 卡流水 − "
         "发票，两段都以 ±0.01 元（1 分）为界；矩阵结果按四态分派——matched 2 "
         "趟进 Matches 表，amount_mismatch（TRIP-1003，Δ1 -50.00）与 "

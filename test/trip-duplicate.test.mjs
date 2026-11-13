@@ -23,7 +23,7 @@ test('ingest retains duplicate trip rows and reports them as issues instead of o
     const tables = { trips: new T(), invoices: new T(), cards: new T(), matches: new T() }
     const tools = createTools({ ...tables, baseDir: path.join(dir, 'store') })
     const by = Object.fromEntries(tools.map((tool) => [tool.name, tool]))
-    const result = await by['travel.ingest'].execute({ trips_csv: dupTrips, invoices_csv: invoices, cards_csv: cards }, { callId: 'dup' })
+    const result = await by['travel_ingest'].execute({ trips_csv: dupTrips, invoices_csv: invoices, cards_csv: cards }, { callId: 'dup' })
     assert.equal(result.trips, 3)
     assert.equal(result.duplicate_trips, 1)
     assert.equal(result.issues.length, 1)
@@ -42,8 +42,8 @@ test('match counts the duplicate trip and matches the unique trips only', async 
     const tools = createTools({ trips: new T(), invoices: new T(), cards: new T(), matches: new T(), baseDir: path.join(dir, 'store') })
     const by = Object.fromEntries(tools.map((tool) => [tool.name, tool]))
     const exec = { callId: 'dup' }
-    await by['travel.ingest'].execute({ trips_csv: dupTrips, invoices_csv: invoices, cards_csv: cards }, exec)
-    const result = await by['travel.match'].execute({}, exec)
+    await by['travel_ingest'].execute({ trips_csv: dupTrips, invoices_csv: invoices, cards_csv: cards }, exec)
+    const result = await by['travel_match'].execute({}, exec)
     assert.equal(result.duplicate_trips, 1)
     assert.equal(result.matched, 2)
     assert.equal(result.exceptions, 0)

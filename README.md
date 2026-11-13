@@ -41,7 +41,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon 结构：三份 CSV（行程 4 行、发票 5 行、卡流水 3 行）由 travel.ingest 按 trip_id 对齐成逐趟对账矩阵，每趟并列订单 / 发票 / 卡流水三列，中间夹着两段带符号分差 Δ1 = 发票 − 订单、Δ2 = 卡流水 − 发票，两段都以 ±0.01 元为界；矩阵结果按四态分派——matched 2 趟进 Matches 表，amount_mismatch（TRIP-1003，Δ1 -50.00）与 card_missing（TRIP-1004，Δ2 -320.00）进例外清单，invoice_missing 0 趟；R1 本地写轨 ingest → match → export 写 exports/travel-ledger.xlsx（Trips / Matches），R0 只读轨 duplicate / policy / reuse / daily_limit 只返回清单；原 CSV 只读、不联网、不调模型">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon 结构：三份 CSV（行程 4 行、发票 5 行、卡流水 3 行）由 travel_ingest 按 trip_id 对齐成逐趟对账矩阵，每趟并列订单 / 发票 / 卡流水三列，中间夹着两段带符号分差 Δ1 = 发票 − 订单、Δ2 = 卡流水 − 发票，两段都以 ±0.01 元为界；矩阵结果按四态分派——matched 2 趟进 Matches 表，amount_mismatch（TRIP-1003，Δ1 -50.00）与 card_missing（TRIP-1004，Δ2 -320.00）进例外清单，invoice_missing 0 趟；R1 本地写轨 ingest → match → export 写 exports/travel-ledger.xlsx（Trips / Matches），R0 只读轨 duplicate / policy / reuse / daily_limit 只返回清单；原 CSV 只读、不联网、不调模型">
 </picture>
 
 ## 三步上手
@@ -49,7 +49,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 1. **安装**（四选一；npm 是推荐通道，其余用于固定版本或离线）：
 
    ```sh
-   # npm（推荐，已发布 0.1.1）
+   # npm（推荐，已发布 0.2.0）
    dsh plugin --profile <profile> add dsh-travel-recon
    # git 通道（最新 main；等价于 git+https://github.com/PerryLink/dsh-travel-recon.git）
    dsh plugin --profile <profile> add github:PerryLink/dsh-travel-recon
@@ -79,26 +79,26 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 ## 核心能力
 
-- **三单匹配（±1 分钱）** — `travel.match` 按 `trip_id` 把行程、发票、卡流水对上，容差 0.01 元；例外分 `invoice_missing` / `card_missing` / `amount_mismatch` 三种原因，逐单返回分差。
-- **去重不静默** — 重复的 `trip_id` 保留并作为 issue 报告（`E_TRAVEL_TRIP_DUPLICATE`），同一 id 只入库一次、其余计入 `skipped`；重复发票与重复卡流水由 `travel.duplicate_check` 单独列出。
-- **跨行程重复报销** — `travel.reuse_check` 在导入前就能报出同一张发票号或同一笔卡流水覆盖多个行程的双报销模式，不需要已存数据。
-- **只读政策检查** — `travel.policy_check`（单笔上限 + 是否必须有发票）与 `travel.daily_limit_check`（每人每日合计上限）都只返回违规清单：不改单据、不审批、不打款。
-- **两表台账导出** — `travel.export` 写 `exports/travel-ledger.xlsx`，工作表 `Trips` / `Matches`；路径经越界校验后才写。
+- **三单匹配（±1 分钱）** — `travel_match` 按 `trip_id` 把行程、发票、卡流水对上，容差 0.01 元；例外分 `invoice_missing` / `card_missing` / `amount_mismatch` 三种原因，逐单返回分差。
+- **去重不静默** — 重复的 `trip_id` 保留并作为 issue 报告（`E_TRAVEL_TRIP_DUPLICATE`），同一 id 只入库一次、其余计入 `skipped`；重复发票与重复卡流水由 `travel_duplicate_check` 单独列出。
+- **跨行程重复报销** — `travel_reuse_check` 在导入前就能报出同一张发票号或同一笔卡流水覆盖多个行程的双报销模式，不需要已存数据。
+- **只读政策检查** — `travel_policy_check`（单笔上限 + 是否必须有发票）与 `travel_daily_limit_check`（每人每日合计上限）都只返回违规清单：不改单据、不审批、不打款。
+- **两表台账导出** — `travel_export` 写 `exports/travel-ledger.xlsx`，工作表 `Trips` / `Matches`；路径经越界校验后才写。
 - **本地优先** — 源码里没有 HTTP / DNS / WebSocket 调用，也不调模型；输入输出都留在本地。
 
 ### 工具面
 
-工具名是稳定 API（`travel.*`），运行时描述为英文；下表是中文用途。
+工具名是稳定 API（`travel_*`），运行时描述为英文；下表是中文用途。
 
 | 工具 | 用途 | 风险 |
 |---|---|---|
-| `travel.ingest` | 导入差旅行程/发票/卡流水三份 CSV | R1 本地写 |
-| `travel.match` | 对订单/发票/卡流水执行三单匹配（写入匹配状态） | R1 本地写 |
-| `travel.duplicate_check` | 按行程检测重复的发票/卡流水 | R0 |
-| `travel.policy_check` | 只读的金额上限与发票存在性策略检查 | R0 |
-| `travel.reuse_check` | 只读的跨行程发票/卡流水重复使用检查 | R0 |
-| `travel.daily_limit_check` | 只读的每位员工每日限额检查 | R0 |
-| `travel.export` | 导出对账台账 xlsx（`Trips` / `Matches`） | R1 本地写 |
+| `travel_ingest` | 导入差旅行程/发票/卡流水三份 CSV | R1 本地写 |
+| `travel_match` | 对订单/发票/卡流水执行三单匹配（写入匹配状态） | R1 本地写 |
+| `travel_duplicate_check` | 按行程检测重复的发票/卡流水 | R0 |
+| `travel_policy_check` | 只读的金额上限与发票存在性策略检查 | R0 |
+| `travel_reuse_check` | 只读的跨行程发票/卡流水重复使用检查 | R0 |
+| `travel_daily_limit_check` | 只读的每位员工每日限额检查 | R0 |
+| `travel_export` | 导出对账台账 xlsx（`Trips` / `Matches`） | R1 本地写 |
 
 ### 输入
 
@@ -177,25 +177,25 @@ quickstart ok
 
 | 参数 | 所属工具 | 默认 | 含义 |
 |---|---|---|---|
-| `trips_csv` | `travel.ingest` | 必填 | 行程 CSV 文本 |
-| `invoices_csv` | `travel.ingest` / `travel.reuse_check` | 必填 | 发票 CSV 文本 |
-| `cards_csv` | `travel.ingest` / `travel.reuse_check` | 必填 | 卡流水 CSV 文本 |
-| `max_order_cents` | `travel.policy_check` | 必填 | 单笔金额上限（分） |
-| `require_invoice` | `travel.policy_check` | `false` | 是否要求每个行程都有发票 |
-| `cap_cents` | `travel.daily_limit_check` | 必填 | 每人每日合计上限（分） |
+| `trips_csv` | `travel_ingest` | 必填 | 行程 CSV 文本 |
+| `invoices_csv` | `travel_ingest` / `travel_reuse_check` | 必填 | 发票 CSV 文本 |
+| `cards_csv` | `travel_ingest` / `travel_reuse_check` | 必填 | 卡流水 CSV 文本 |
+| `max_order_cents` | `travel_policy_check` | 必填 | 单笔金额上限（分） |
+| `require_invoice` | `travel_policy_check` | `false` | 是否要求每个行程都有发票 |
+| `cap_cents` | `travel_daily_limit_check` | 必填 | 每人每日合计上限（分） |
 
 <details>
 <summary>完整工具与输出（7 个工具）</summary>
 
 | 工具 | 参数 | 返回 | 风险 |
 |---|---|---|---|
-| `travel.ingest` | `trips_csv`、`invoices_csv`、`cards_csv`（字符串，均必填） | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`，以及 `issues[]`（`code`、`trip_id`、`occurrences`） | R1 本地写 |
-| `travel.match` | 无 | `matched` / `exceptions` / `duplicate_trips`；每条匹配记录带 `state`、`reason` 与两个分差 | R1 本地写（写匹配状态） |
-| `travel.duplicate_check` | 无 | `duplicates[]`（`kind`、`trip_id`、`count`） | R0 |
-| `travel.policy_check` | `max_order_cents`（数字，必填）、`require_invoice`（布尔，可选） | `checked` / `violations[]`（`trip_id`、`reason`） | R0 |
-| `travel.reuse_check` | `invoices_csv`、`cards_csv`（字符串，均必填） | `invoice_reuse[]` / `card_reuse[]`（`id`、`trips[]`） | R0 |
-| `travel.daily_limit_check` | `cap_cents`（数字，必填） | `days` / `over_limit[]`（`employee`、`date`、`total_cents`、`over_by_cents`） | R0 |
-| `travel.export` | 无 | `path` / `rows`；两表 xlsx 写在数据目录的 `exports/` 下 | R1 本地写 |
+| `travel_ingest` | `trips_csv`、`invoices_csv`、`cards_csv`（字符串，均必填） | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`，以及 `issues[]`（`code`、`trip_id`、`occurrences`） | R1 本地写 |
+| `travel_match` | 无 | `matched` / `exceptions` / `duplicate_trips`；每条匹配记录带 `state`、`reason` 与两个分差 | R1 本地写（写匹配状态） |
+| `travel_duplicate_check` | 无 | `duplicates[]`（`kind`、`trip_id`、`count`） | R0 |
+| `travel_policy_check` | `max_order_cents`（数字，必填）、`require_invoice`（布尔，可选） | `checked` / `violations[]`（`trip_id`、`reason`） | R0 |
+| `travel_reuse_check` | `invoices_csv`、`cards_csv`（字符串，均必填） | `invoice_reuse[]` / `card_reuse[]`（`id`、`trips[]`） | R0 |
+| `travel_daily_limit_check` | `cap_cents`（数字，必填） | `days` / `over_limit[]`（`employee`、`date`、`total_cents`、`over_by_cents`） | R0 |
+| `travel_export` | 无 | `path` / `rows`；两表 xlsx 写在数据目录的 `exports/` 下 | R1 本地写 |
 
 </details>
 
@@ -239,7 +239,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 <details>
 <summary>政策检查会改单据或自动审批吗？</summary>
 
-不会。`travel.policy_check` / `travel.daily_limit_check` / `travel.duplicate_check` / `travel.reuse_check` 都是只读，只返回违规清单；是否批准、是否打款由你决定，本包不提供审批或改单能力。
+不会。`travel_policy_check` / `travel_daily_limit_check` / `travel_duplicate_check` / `travel_reuse_check` 都是只读，只返回违规清单；是否批准、是否打款由你决定，本包不提供审批或改单能力。
 
 </details>
 
@@ -263,7 +263,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 - **仅公开/合成样例**：`EVIDENCE.md` 记录 0 趟真实行程、20 趟合成行程/发票/卡流水；仓库不含客户数据，也不作客户运行声明。
 - **alpha / partial / not counted / 非 GA**：不作生产可用声明；接口与工具面可能随版本变化。
 - **CSV 格式固定**：三份文件表头必须按上文列名（大小写不敏感），金额最多两位小数；建议单个文件 ≤5 MB。
-- **匹配是逐行程 1:1**：每个行程只取一条发票与一条卡流水参与三单匹配，同一行程的多条记录由 `travel.duplicate_check` 报告，不会自动合并。
+- **匹配是逐行程 1:1**：每个行程只取一条发票与一条卡流水参与三单匹配，同一行程的多条记录由 `travel_duplicate_check` 报告，不会自动合并。
 - **不替你批准**：所有检查只读；本包没有审批、打款、改单或对接报销/差旅平台的能力。
 - **每个工具的精确边界**见上方工具表与 `ACCEPTANCE.csv`；除非工具明确说明，否则不调用模型、不联网。
 
@@ -316,7 +316,7 @@ docs/assets/            README 配图
 cordis.patch.yml        bundle patch（只 insert 本插件一行）
 ```
 
-当前版本 `0.1.1`（与 `package.json` 一致）；测试 `node --test test/*.test.mjs` 全绿（25 个用例，0 失败）。README 配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python + Pillow），可重复执行：
+当前版本 `0.2.0`（与 `package.json` 一致）；测试 `node --test test/*.test.mjs` 全绿（26 个用例，0 失败）。README 配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python + Pillow），可重复执行：
 
 ```sh
 python scripts/gen-readme-assets.py

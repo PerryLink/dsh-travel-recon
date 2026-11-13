@@ -41,7 +41,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="Estructura de dsh-travel-recon: tres CSV (4 viajes, 5 facturas, 3 tarjetas) alineados por trip_id con travel.ingest en una matriz de conciliación por viaje, con columnas de orden / factura / tarjeta y dos diferencias con signo entre medias, Δ1 = factura - orden y Δ2 = tarjeta - factura, ambas con límite ±0.01; la matriz se reparte en cuatro estados — matched 2 a la hoja Matches, amount_mismatch (TRIP-1003, Δ1 -50.00) y card_missing (TRIP-1004, Δ2 -320.00) a la lista de excepciones; el carril R1 de escritura local ingest → match → export escribe exports/travel-ledger.xlsx (Trips / Matches) y el carril R0 de solo lectura duplicate / policy / reuse / daily_limit solo devuelve listas; el CSV original queda intacto, sin red y sin modelo">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="Estructura de dsh-travel-recon: tres CSV (4 viajes, 5 facturas, 3 tarjetas) alineados por trip_id con travel_ingest en una matriz de conciliación por viaje, con columnas de orden / factura / tarjeta y dos diferencias con signo entre medias, Δ1 = factura - orden y Δ2 = tarjeta - factura, ambas con límite ±0.01; la matriz se reparte en cuatro estados — matched 2 a la hoja Matches, amount_mismatch (TRIP-1003, Δ1 -50.00) y card_missing (TRIP-1004, Δ2 -320.00) a la lista de excepciones; el carril R1 de escritura local ingest → match → export escribe exports/travel-ledger.xlsx (Trips / Matches) y el carril R0 de solo lectura duplicate / policy / reuse / daily_limit solo devuelve listas; el CSV original queda intacto, sin red y sin modelo">
 </picture>
 
 ## Instalación en tres pasos
@@ -49,7 +49,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 1. **Instalar** (elige un canal; npm es el recomendado y el resto sirve para fijar versión o trabajar sin conexión):
 
    ```sh
-   # npm (recomendado, 0.1.1 publicado)
+   # npm (recomendado, 0.2.0 publicado)
    dsh plugin --profile <profile> add dsh-travel-recon
    # canal git (último main; equivale a git+https://github.com/PerryLink/dsh-travel-recon.git)
    dsh plugin --profile <profile> add github:PerryLink/dsh-travel-recon
@@ -79,26 +79,26 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 ## Capacidades clave
 
-- **Cruce de tres vías (±1 céntimo)** — `travel.match` une órdenes, facturas y tarjetas por `trip_id` con tolerancia de 0.01; las excepciones vuelven por viaje como `invoice_missing`, `card_missing` o `amount_mismatch`, con ambas diferencias.
-- **Deduplicación sin silencios** — los `trip_id` repetidos se conservan y se reportan como issues (`E_TRAVEL_TRIP_DUPLICATE`); cada id se guarda una vez y el resto cuenta como `skipped`. Las facturas y los movimientos duplicados los lista `travel.duplicate_check`.
-- **Doble reclamación entre viajes** — `travel.reuse_check` informa de una factura o un movimiento de tarjeta que aparece en más de un viaje antes de importar; no necesita datos guardados.
-- **Comprobaciones de solo lectura** — `travel.policy_check` (tope por viaje + presencia de factura) y `travel.daily_limit_check` (tope diario por empleado) solo devuelven listas de infracciones: sin ediciones, sin aprobación, sin pagos.
-- **Exportación de libro de dos hojas** — `travel.export` escribe `exports/travel-ledger.xlsx` con las hojas `Trips` / `Matches`; la ruta pasa una validación anti-fuga antes de escribir.
+- **Cruce de tres vías (±1 céntimo)** — `travel_match` une órdenes, facturas y tarjetas por `trip_id` con tolerancia de 0.01; las excepciones vuelven por viaje como `invoice_missing`, `card_missing` o `amount_mismatch`, con ambas diferencias.
+- **Deduplicación sin silencios** — los `trip_id` repetidos se conservan y se reportan como issues (`E_TRAVEL_TRIP_DUPLICATE`); cada id se guarda una vez y el resto cuenta como `skipped`. Las facturas y los movimientos duplicados los lista `travel_duplicate_check`.
+- **Doble reclamación entre viajes** — `travel_reuse_check` informa de una factura o un movimiento de tarjeta que aparece en más de un viaje antes de importar; no necesita datos guardados.
+- **Comprobaciones de solo lectura** — `travel_policy_check` (tope por viaje + presencia de factura) y `travel_daily_limit_check` (tope diario por empleado) solo devuelven listas de infracciones: sin ediciones, sin aprobación, sin pagos.
+- **Exportación de libro de dos hojas** — `travel_export` escribe `exports/travel-ledger.xlsx` con las hojas `Trips` / `Matches`; la ruta pasa una validación anti-fuga antes de escribir.
 - **Local primero** — no hay llamadas HTTP, DNS ni WebSocket en el código, ni llamadas al modelo; entrada y salida se quedan en la máquina.
 
 ### Superficie de herramientas
 
-Los nombres de herramienta son una API estable (`travel.*`); las descripciones en tiempo de ejecución están en inglés, igual que la salida.
+Los nombres de herramienta son una API estable (`travel_*`); las descripciones en tiempo de ejecución están en inglés, igual que la salida.
 
 | Herramienta | Propósito | Riesgo |
 |---|---|---|
-| `travel.ingest` | Importa filas de órdenes/facturas/tarjetas | R1 escritura local |
-| `travel.match` | Cruce de tres vías orden/factura/tarjeta (escribe el estado) | R1 escritura local |
-| `travel.duplicate_check` | Detecta factura/tarjeta duplicada por viaje | R0 |
-| `travel.policy_check` | Comprobación de solo lectura de tope y factura presente | R0 |
-| `travel.reuse_check` | Comprobación de solo lectura de reutilización entre viajes | R0 |
-| `travel.daily_limit_check` | Comprobación de solo lectura del tope diario por empleado | R0 |
-| `travel.export` | Exporta el libro xlsx de conciliación (`Trips` / `Matches`) | R1 escritura local |
+| `travel_ingest` | Importa filas de órdenes/facturas/tarjetas | R1 escritura local |
+| `travel_match` | Cruce de tres vías orden/factura/tarjeta (escribe el estado) | R1 escritura local |
+| `travel_duplicate_check` | Detecta factura/tarjeta duplicada por viaje | R0 |
+| `travel_policy_check` | Comprobación de solo lectura de tope y factura presente | R0 |
+| `travel_reuse_check` | Comprobación de solo lectura de reutilización entre viajes | R0 |
+| `travel_daily_limit_check` | Comprobación de solo lectura del tope diario por empleado | R0 |
+| `travel_export` | Exporta el libro xlsx de conciliación (`Trips` / `Matches`) | R1 escritura local |
 
 ### Entrada
 
@@ -177,25 +177,25 @@ Argumentos de llamada más usados (el dinero siempre es un entero de céntimos):
 
 | Argumento | Herramienta | Por defecto | Significado |
 |---|---|---|---|
-| `trips_csv` | `travel.ingest` | obligatorio | Texto CSV de viajes |
-| `invoices_csv` | `travel.ingest` / `travel.reuse_check` | obligatorio | Texto CSV de facturas |
-| `cards_csv` | `travel.ingest` / `travel.reuse_check` | obligatorio | Texto CSV de tarjetas |
-| `max_order_cents` | `travel.policy_check` | obligatorio | Tope por viaje (céntimos) |
-| `require_invoice` | `travel.policy_check` | `false` | Exigir factura en cada viaje |
-| `cap_cents` | `travel.daily_limit_check` | obligatorio | Tope diario por empleado (céntimos) |
+| `trips_csv` | `travel_ingest` | obligatorio | Texto CSV de viajes |
+| `invoices_csv` | `travel_ingest` / `travel_reuse_check` | obligatorio | Texto CSV de facturas |
+| `cards_csv` | `travel_ingest` / `travel_reuse_check` | obligatorio | Texto CSV de tarjetas |
+| `max_order_cents` | `travel_policy_check` | obligatorio | Tope por viaje (céntimos) |
+| `require_invoice` | `travel_policy_check` | `false` | Exigir factura en cada viaje |
+| `cap_cents` | `travel_daily_limit_check` | obligatorio | Tope diario por empleado (céntimos) |
 
 <details>
 <summary>Superficie completa de herramientas y salidas (7 herramientas)</summary>
 
 | Herramienta | Argumentos | Devuelve | Riesgo |
 |---|---|---|---|
-| `travel.ingest` | `trips_csv`, `invoices_csv`, `cards_csv` (texto, obligatorios) | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`, más `issues[]` (`code`, `trip_id`, `occurrences`) | R1 escritura local |
-| `travel.match` | ninguno | `matched` / `exceptions` / `duplicate_trips`; cada registro lleva `state`, `reason` y las dos diferencias | R1 escritura local (estado) |
-| `travel.duplicate_check` | ninguno | `duplicates[]` (`kind`, `trip_id`, `count`) | R0 |
-| `travel.policy_check` | `max_order_cents` (número, obligatorio), `require_invoice` (booleano, opcional) | `checked` / `violations[]` (`trip_id`, `reason`) | R0 |
-| `travel.reuse_check` | `invoices_csv`, `cards_csv` (texto, obligatorios) | `invoice_reuse[]` / `card_reuse[]` (`id`, `trips[]`) | R0 |
-| `travel.daily_limit_check` | `cap_cents` (número, obligatorio) | `days` / `over_limit[]` (`employee`, `date`, `total_cents`, `over_by_cents`) | R0 |
-| `travel.export` | ninguno | `path` / `rows`; el xlsx de dos hojas va a `exports/` dentro del directorio de datos | R1 escritura local |
+| `travel_ingest` | `trips_csv`, `invoices_csv`, `cards_csv` (texto, obligatorios) | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`, más `issues[]` (`code`, `trip_id`, `occurrences`) | R1 escritura local |
+| `travel_match` | ninguno | `matched` / `exceptions` / `duplicate_trips`; cada registro lleva `state`, `reason` y las dos diferencias | R1 escritura local (estado) |
+| `travel_duplicate_check` | ninguno | `duplicates[]` (`kind`, `trip_id`, `count`) | R0 |
+| `travel_policy_check` | `max_order_cents` (número, obligatorio), `require_invoice` (booleano, opcional) | `checked` / `violations[]` (`trip_id`, `reason`) | R0 |
+| `travel_reuse_check` | `invoices_csv`, `cards_csv` (texto, obligatorios) | `invoice_reuse[]` / `card_reuse[]` (`id`, `trips[]`) | R0 |
+| `travel_daily_limit_check` | `cap_cents` (número, obligatorio) | `days` / `over_limit[]` (`employee`, `date`, `total_cents`, `over_by_cents`) | R0 |
+| `travel_export` | ninguno | `path` / `rows`; el xlsx de dos hojas va a `exports/` dentro del directorio de datos | R1 escritura local |
 
 </details>
 
@@ -239,7 +239,7 @@ Ese viaje no tiene ningún movimiento de tarjeta con el mismo `trip_id`, o el im
 <details>
 <summary>¿Las comprobaciones de política editan documentos o aprueban algo?</summary>
 
-No. `travel.policy_check` / `travel.daily_limit_check` / `travel.duplicate_check` / `travel.reuse_check` son de solo lectura y solo devuelven listas de infracciones; la aprobación y el pago siguen siendo tuyos, y el paquete no incluye capacidad de aprobación ni de edición.
+No. `travel_policy_check` / `travel_daily_limit_check` / `travel_duplicate_check` / `travel_reuse_check` son de solo lectura y solo devuelven listas de infracciones; la aprobación y el pago siguen siendo tuyos, y el paquete no incluye capacidad de aprobación ni de edición.
 
 </details>
 
@@ -263,7 +263,7 @@ Puedes ejecutarlo en local, pero el paquete es alpha y solo se ha validado con d
 - **Solo público/sintético**: `EVIDENCE.md` registra 0 viajes reales y 20 viajes/facturas/tarjetas sintéticos; el repositorio no contiene datos de clientes ni hace afirmaciones de ejecución con clientes.
 - **alpha / parcial / no contabilizado / no GA**: sin afirmación de disponibilidad para producción; la superficie de herramientas puede cambiar entre versiones.
 - **Forma CSV fija**: las cabeceras deben usar los nombres de arriba (sin distinguir mayúsculas) y los importes admiten como máximo dos decimales; mantén cada archivo en 5 MB o menos.
-- **Cruce 1:1 por viaje**: cada viaje aporta una factura y un movimiento de tarjeta al cruce de tres vías; las filas extra del mismo viaje las reporta `travel.duplicate_check` y nunca se fusionan solas.
+- **Cruce 1:1 por viaje**: cada viaje aporta una factura y un movimiento de tarjeta al cruce de tres vías; las filas extra del mismo viaje las reporta `travel_duplicate_check` y nunca se fusionan solas.
 - **No aprueba por ti**: todas las comprobaciones son de solo lectura; no hay aprobación, pago, edición de documentos ni integración con plataformas de gastos o viajes.
 - **Los límites exactos por herramienta** están en la tabla de arriba y en `ACCEPTANCE.csv`; salvo que una herramienta diga lo contrario, sin llamada al modelo y sin red.
 
@@ -316,7 +316,7 @@ docs/assets/            imágenes del README
 cordis.patch.yml        patch del bundle (inserta solo la fila de este plugin)
 ```
 
-Versión actual `0.1.1` (coincide con `package.json`); `node --test test/*.test.mjs` pasa en verde (25 casos, 0 fallos). Las imágenes del README las genera [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) y se puede repetir:
+Versión actual `0.2.0` (coincide con `package.json`); `node --test test/*.test.mjs` pasa en verde (26 casos, 0 fallos). Las imágenes del README las genera [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) y se puede repetir:
 
 ```sh
 python scripts/gen-readme-assets.py
