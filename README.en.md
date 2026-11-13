@@ -41,7 +41,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon structure: three CSVs (4 trips, 5 invoices, 3 cards) keyed by trip_id through travel.ingest into a per-trip reconciliation matrix with order / invoice / card columns and two signed gaps in between, Δ1 = invoice - order and Δ2 = card - invoice, both bounded by ±0.01; the matrix dispatches into four states — matched 2 to the Matches sheet, amount_mismatch (TRIP-1003, Δ1 -50.00) and card_missing (TRIP-1004, Δ2 -320.00) to the exception list; the R1 local-write rail ingest → match → export writes exports/travel-ledger.xlsx (Trips / Matches), the R0 read-only rail duplicate / policy / reuse / daily_limit only returns lists; the source CSV stays read-only, with no network and no model call">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon structure: three CSVs (4 trips, 5 invoices, 3 cards) keyed by trip_id through travel_ingest into a per-trip reconciliation matrix with order / invoice / card columns and two signed gaps in between, Δ1 = invoice - order and Δ2 = card - invoice, both bounded by ±0.01; the matrix dispatches into four states — matched 2 to the Matches sheet, amount_mismatch (TRIP-1003, Δ1 -50.00) and card_missing (TRIP-1004, Δ2 -320.00) to the exception list; the R1 local-write rail ingest → match → export writes exports/travel-ledger.xlsx (Trips / Matches), the R0 read-only rail duplicate / policy / reuse / daily_limit only returns lists; the source CSV stays read-only, with no network and no model call">
 </picture>
 
 ## Three-step setup
@@ -49,7 +49,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 1. **Install** (pick one; npm is the recommended channel, the rest are for pinning or offline):
 
    ```sh
-   # npm (recommended, 0.1.1 published)
+   # npm (recommended, 0.2.0 published)
    dsh plugin --profile <profile> add dsh-travel-recon
    # git channel (latest main; equivalent to git+https://github.com/PerryLink/dsh-travel-recon.git)
    dsh plugin --profile <profile> add github:PerryLink/dsh-travel-recon
@@ -79,26 +79,26 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 ## Core capabilities
 
-- **Three-way match (±1 cent)** — `travel.match` joins orders, invoices and card rows on `trip_id` with a 0.01 tolerance; exceptions come back per trip as `invoice_missing`, `card_missing` or `amount_mismatch`, with both deltas.
-- **Dedupe without silence** — duplicate `trip_id`s are kept and reported as issues (`E_TRAVEL_TRIP_DUPLICATE`); each id is stored once and the rest count as `skipped`. Duplicate invoices and card rows are listed separately by `travel.duplicate_check`.
-- **Cross-trip double claims** — `travel.reuse_check` reports an invoice id or a card transaction id that appears under more than one trip before ingest; it needs no stored data.
-- **Read-only policy checks** — `travel.policy_check` (per-trip cap + invoice presence) and `travel.daily_limit_check` (per-employee per-day cap) return violation lists only: no edits, no approval, no payment.
-- **Two-sheet ledger export** — `travel.export` writes `exports/travel-ledger.xlsx` with `Trips` / `Matches` sheets; the path passes an escape guard before anything is written.
+- **Three-way match (±1 cent)** — `travel_match` joins orders, invoices and card rows on `trip_id` with a 0.01 tolerance; exceptions come back per trip as `invoice_missing`, `card_missing` or `amount_mismatch`, with both deltas.
+- **Dedupe without silence** — duplicate `trip_id`s are kept and reported as issues (`E_TRAVEL_TRIP_DUPLICATE`); each id is stored once and the rest count as `skipped`. Duplicate invoices and card rows are listed separately by `travel_duplicate_check`.
+- **Cross-trip double claims** — `travel_reuse_check` reports an invoice id or a card transaction id that appears under more than one trip before ingest; it needs no stored data.
+- **Read-only policy checks** — `travel_policy_check` (per-trip cap + invoice presence) and `travel_daily_limit_check` (per-employee per-day cap) return violation lists only: no edits, no approval, no payment.
+- **Two-sheet ledger export** — `travel_export` writes `exports/travel-ledger.xlsx` with `Trips` / `Matches` sheets; the path passes an escape guard before anything is written.
 - **Local first** — no HTTP, DNS or WebSocket calls in the source and no model calls; input and output stay on the machine.
 
 ### Tool surface
 
-Tool names are a stable API (`travel.*`); runtime descriptions are English, matching the tool output.
+Tool names are a stable API (`travel_*`); runtime descriptions are English, matching the tool output.
 
 | Tool | Purpose | Risk |
 |---|---|---|
-| `travel.ingest` | Ingest travel order/invoice/card rows | R1 local write |
-| `travel.match` | Three-way match order/invoice/card (writes match state) | R1 local write |
-| `travel.duplicate_check` | Detect duplicate invoice/card per trip | R0 |
-| `travel.policy_check` | Read-only max-amount and invoice-presence policy check | R0 |
-| `travel.reuse_check` | Read-only cross-trip invoice/card reuse check | R0 |
-| `travel.daily_limit_check` | Read-only per-employee daily cap check | R0 |
-| `travel.export` | Export the reconciliation ledger xlsx (`Trips` / `Matches`) | R1 local write |
+| `travel_ingest` | Ingest travel order/invoice/card rows | R1 local write |
+| `travel_match` | Three-way match order/invoice/card (writes match state) | R1 local write |
+| `travel_duplicate_check` | Detect duplicate invoice/card per trip | R0 |
+| `travel_policy_check` | Read-only max-amount and invoice-presence policy check | R0 |
+| `travel_reuse_check` | Read-only cross-trip invoice/card reuse check | R0 |
+| `travel_daily_limit_check` | Read-only per-employee daily cap check | R0 |
+| `travel_export` | Export the reconciliation ledger xlsx (`Trips` / `Matches`) | R1 local write |
 
 ### Input
 
@@ -177,25 +177,25 @@ Most-used call arguments (money is always an integer number of cents):
 
 | Argument | Tool | Default | Meaning |
 |---|---|---|---|
-| `trips_csv` | `travel.ingest` | required | Trip CSV text |
-| `invoices_csv` | `travel.ingest` / `travel.reuse_check` | required | Invoice CSV text |
-| `cards_csv` | `travel.ingest` / `travel.reuse_check` | required | Card CSV text |
-| `max_order_cents` | `travel.policy_check` | required | Per-trip amount cap (cents) |
-| `require_invoice` | `travel.policy_check` | `false` | Require an invoice for every trip |
-| `cap_cents` | `travel.daily_limit_check` | required | Per-employee per-day cap (cents) |
+| `trips_csv` | `travel_ingest` | required | Trip CSV text |
+| `invoices_csv` | `travel_ingest` / `travel_reuse_check` | required | Invoice CSV text |
+| `cards_csv` | `travel_ingest` / `travel_reuse_check` | required | Card CSV text |
+| `max_order_cents` | `travel_policy_check` | required | Per-trip amount cap (cents) |
+| `require_invoice` | `travel_policy_check` | `false` | Require an invoice for every trip |
+| `cap_cents` | `travel_daily_limit_check` | required | Per-employee per-day cap (cents) |
 
 <details>
 <summary>Full tool and output surface (7 tools)</summary>
 
 | Tool | Arguments | Returns | Risk |
 |---|---|---|---|
-| `travel.ingest` | `trips_csv`, `invoices_csv`, `cards_csv` (strings, all required) | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`, plus `issues[]` (`code`, `trip_id`, `occurrences`) | R1 local write |
-| `travel.match` | none | `matched` / `exceptions` / `duplicate_trips`; each match record carries `state`, `reason` and both deltas | R1 local write (match state) |
-| `travel.duplicate_check` | none | `duplicates[]` (`kind`, `trip_id`, `count`) | R0 |
-| `travel.policy_check` | `max_order_cents` (number, required), `require_invoice` (boolean, optional) | `checked` / `violations[]` (`trip_id`, `reason`) | R0 |
-| `travel.reuse_check` | `invoices_csv`, `cards_csv` (strings, both required) | `invoice_reuse[]` / `card_reuse[]` (`id`, `trips[]`) | R0 |
-| `travel.daily_limit_check` | `cap_cents` (number, required) | `days` / `over_limit[]` (`employee`, `date`, `total_cents`, `over_by_cents`) | R0 |
-| `travel.export` | none | `path` / `rows`; the two-sheet xlsx lands in `exports/` under the data directory | R1 local write |
+| `travel_ingest` | `trips_csv`, `invoices_csv`, `cards_csv` (strings, all required) | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`, plus `issues[]` (`code`, `trip_id`, `occurrences`) | R1 local write |
+| `travel_match` | none | `matched` / `exceptions` / `duplicate_trips`; each match record carries `state`, `reason` and both deltas | R1 local write (match state) |
+| `travel_duplicate_check` | none | `duplicates[]` (`kind`, `trip_id`, `count`) | R0 |
+| `travel_policy_check` | `max_order_cents` (number, required), `require_invoice` (boolean, optional) | `checked` / `violations[]` (`trip_id`, `reason`) | R0 |
+| `travel_reuse_check` | `invoices_csv`, `cards_csv` (strings, both required) | `invoice_reuse[]` / `card_reuse[]` (`id`, `trips[]`) | R0 |
+| `travel_daily_limit_check` | `cap_cents` (number, required) | `days` / `over_limit[]` (`employee`, `date`, `total_cents`, `over_by_cents`) | R0 |
+| `travel_export` | none | `path` / `rows`; the two-sheet xlsx lands in `exports/` under the data directory | R1 local write |
 
 </details>
 
@@ -239,7 +239,7 @@ That trip has no card row with the same `trip_id`, or the amount differs by more
 <details>
 <summary>Do the policy checks edit documents or approve anything?</summary>
 
-No. `travel.policy_check` / `travel.daily_limit_check` / `travel.duplicate_check` / `travel.reuse_check` are all read-only and only return violation lists; approval and payment stay with you, and this package ships no approval or edit capability.
+No. `travel_policy_check` / `travel_daily_limit_check` / `travel_duplicate_check` / `travel_reuse_check` are all read-only and only return violation lists; approval and payment stay with you, and this package ships no approval or edit capability.
 
 </details>
 
@@ -263,7 +263,7 @@ You can run it locally, but this package is alpha and has only been validated on
 - **Public/synthetic only**: `EVIDENCE.md` records 0 real trips and 20 synthetic trips/invoices/card rows; the repository contains no customer data and makes no customer-run claim.
 - **alpha / partial / not counted / not GA**: no production-readiness claim; the tool surface may change between versions.
 - **Fixed CSV shape**: headers must use the column names above (case-insensitive) and amounts take at most two decimals; keep each file at or below 5 MB.
-- **1:1 match per trip**: each trip contributes one invoice and one card row to the three-way match; extra rows for the same trip are reported by `travel.duplicate_check` and are never merged automatically.
+- **1:1 match per trip**: each trip contributes one invoice and one card row to the three-way match; extra rows for the same trip are reported by `travel_duplicate_check` and are never merged automatically.
 - **It does not approve for you**: every check is read-only; there is no approval, payment, document editing or integration with expense/travel platforms.
 - **Exact per-tool boundaries** are in the tool table above and in `ACCEPTANCE.csv`; unless a tool says otherwise, no model call and no network.
 
@@ -316,7 +316,7 @@ docs/assets/            README images
 cordis.patch.yml        bundle patch (inserts only this plugin's row)
 ```
 
-Current version `0.1.1` (matches `package.json`); `node --test test/*.test.mjs` is green (25 cases, 0 failures). README images are generated by [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) and can be re-run:
+Current version `0.2.0` (matches `package.json`); `node --test test/*.test.mjs` is green (26 cases, 0 failures). README images are generated by [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) and can be re-run:
 
 ```sh
 python scripts/gen-readme-assets.py

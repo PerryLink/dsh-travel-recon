@@ -7,7 +7,7 @@ const tools = Object.fromEntries(createTools({ trips: new T(), invoices: new T()
 const exec = { callId: 'reuse' }
 
 test('an invoice re-used on two trips is reported before ingest', async () => {
-  const r = await tools['travel.reuse_check'].execute({
+  const r = await tools['travel_reuse_check'].execute({
     invoices_csv: 'invoice_id,trip_id,amount\nI1,T1,100.00\nI1,T2,100.00\nI2,T1,50.00',
     cards_csv: 'txn_id,trip_id,amount\nC1,T1,100.00',
   }, exec)
@@ -18,7 +18,7 @@ test('an invoice re-used on two trips is reported before ingest', async () => {
 })
 
 test('a card transaction re-used on two trips is reported', async () => {
-  const r = await tools['travel.reuse_check'].execute({
+  const r = await tools['travel_reuse_check'].execute({
     invoices_csv: 'invoice_id,trip_id,amount\nI1,T1,100.00',
     cards_csv: 'txn_id,trip_id,amount\nC9,T1,20.00\nC9,T3,20.00',
   }, exec)
@@ -28,7 +28,7 @@ test('a card transaction re-used on two trips is reported', async () => {
 })
 
 test('clean statements report no reuse', async () => {
-  const r = await tools['travel.reuse_check'].execute({
+  const r = await tools['travel_reuse_check'].execute({
     invoices_csv: 'invoice_id,trip_id,amount\nI1,T1,100.00\nI2,T2,90.00',
     cards_csv: 'txn_id,trip_id,amount\nC1,T1,100.00\nC2,T2,90.00',
   }, exec)

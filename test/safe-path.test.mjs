@@ -58,7 +58,7 @@ test('the export tool writes through safeExportPath under exports/', async () =>
   try {
     const tools = createTools({ trips: new T(), invoices: new T(), cards: new T(), matches: new T(), baseDir: path.join(dir, 'store') })
     const by = Object.fromEntries(tools.map((tool) => [tool.name, tool]))
-    const result = await by['travel.export'].execute({}, { callId: 'path' })
+    const result = await by['travel_export'].execute({}, { callId: 'path' })
     assert.equal(result.path, path.join(await realpath(path.join(dir, 'store', 'exports')), 'travel-ledger.xlsx'))
   } finally { await rm(dir, { recursive: true, force: true }) }
 })

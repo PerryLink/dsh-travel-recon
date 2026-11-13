@@ -5,11 +5,11 @@
 
 ## 0.1.0-alpha.1 — policy check (2026-10-31)
 
-- Added `travel.policy_check`; read-only max amount + invoice presence; tests 2/2.
+- Added `travel_policy_check`; read-only max amount + invoice presence; tests 2/2.
 
 ### latest moved
 - `latest`/`next` verified alpha.1 after propagation.
 
 ## 0.1.0-alpha.2 — duplicate check (2026-10-31)
 
-- Added `travel.duplicate_check`; 5 gate rows.
+- Added `travel_duplicate_check`; 5 gate rows.

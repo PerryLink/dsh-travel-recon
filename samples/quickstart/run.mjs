@@ -41,18 +41,18 @@ async function run() {
     const tools = Object.fromEntries(createTools(tables).map((tool) => [tool.name, tool]))
     const call = (name, args) => tools[name].execute(args, { callId: 'quickstart' })
 
-    const ingest = await call('travel.ingest', {
+    const ingest = await call('travel_ingest', {
       trips_csv: tripsCsv,
       invoices_csv: invoicesCsv,
       cards_csv: cardsCsv,
     })
-    const match = await call('travel.match', {})
-    const exported = await call('travel.export', {})
+    const match = await call('travel_match', {})
+    const exported = await call('travel_export', {})
     const workbook = XLSX.read(await readFile(exported.path), { type: 'buffer' })
-    const duplicates = await call('travel.duplicate_check', {})
-    const policy = await call('travel.policy_check', { max_order_cents: 200000, require_invoice: true })
-    const daily = await call('travel.daily_limit_check', { cap_cents: 300000 })
-    const reuse = await call('travel.reuse_check', { invoices_csv: invoicesCsv, cards_csv: cardsCsv })
+    const duplicates = await call('travel_duplicate_check', {})
+    const policy = await call('travel_policy_check', { max_order_cents: 200000, require_invoice: true })
+    const daily = await call('travel_daily_limit_check', { cap_cents: 300000 })
+    const reuse = await call('travel_reuse_check', { invoices_csv: invoicesCsv, cards_csv: cardsCsv })
 
     const exceptions = [...tables.matches.entries()]
       .map(([, record]) => record)

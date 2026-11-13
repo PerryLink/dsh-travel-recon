@@ -41,7 +41,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-travel-recon-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon संरचना: तीन CSV (4 यात्राएँ, 5 इनवॉइस, 3 कार्ड पंक्तियाँ) travel.ingest द्वारा trip_id पर संरेखित होकर प्रति-यात्रा मिलान मैट्रिक्स बनाते हैं, जिसमें ऑर्डर / इनवॉइस / कार्ड स्तंभ और बीच में दो चिह्नित अंतर Δ1 = इनवॉइस - ऑर्डर तथा Δ2 = कार्ड - इनवॉइस हैं, दोनों ±0.01 की सीमा में; मैट्रिक्स चार स्थितियों में बँटता है — matched 2 Matches शीट में, amount_mismatch (TRIP-1003, Δ1 -50.00) और card_missing (TRIP-1004, Δ2 -320.00) अपवाद सूची में; R1 लोकल-राइट रेल ingest → match → export, exports/travel-ledger.xlsx (Trips / Matches) लिखती है और R0 केवल-पढ़ने वाली रेल duplicate / policy / reuse / daily_limit केवल सूचियाँ लौटाती है; मूल CSV अपरिवर्तित, कोई नेटवर्क नहीं और कोई मॉडल कॉल नहीं">
+  <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon संरचना: तीन CSV (4 यात्राएँ, 5 इनवॉइस, 3 कार्ड पंक्तियाँ) travel_ingest द्वारा trip_id पर संरेखित होकर प्रति-यात्रा मिलान मैट्रिक्स बनाते हैं, जिसमें ऑर्डर / इनवॉइस / कार्ड स्तंभ और बीच में दो चिह्नित अंतर Δ1 = इनवॉइस - ऑर्डर तथा Δ2 = कार्ड - इनवॉइस हैं, दोनों ±0.01 की सीमा में; मैट्रिक्स चार स्थितियों में बँटता है — matched 2 Matches शीट में, amount_mismatch (TRIP-1003, Δ1 -50.00) और card_missing (TRIP-1004, Δ2 -320.00) अपवाद सूची में; R1 लोकल-राइट रेल ingest → match → export, exports/travel-ledger.xlsx (Trips / Matches) लिखती है और R0 केवल-पढ़ने वाली रेल duplicate / policy / reuse / daily_limit केवल सूचियाँ लौटाती है; मूल CSV अपरिवर्तित, कोई नेटवर्क नहीं और कोई मॉडल कॉल नहीं">
 </picture>
 
 ## तीन चरणों में शुरुआत
@@ -49,7 +49,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 1. **इंस्टॉल करें** (कोई एक चैनल चुनें; npm अनुशंसित है, बाकी वर्ज़न पिन या ऑफ़लाइन के लिए):
 
    ```sh
-   # npm (अनुशंसित, 0.1.1 प्रकाशित)
+   # npm (अनुशंसित, 0.2.0 प्रकाशित)
    dsh plugin --profile <profile> add dsh-travel-recon
    # git चैनल (नवीनतम main; बराबर है git+https://github.com/PerryLink/dsh-travel-recon.git)
    dsh plugin --profile <profile> add github:PerryLink/dsh-travel-recon
@@ -79,26 +79,26 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 ## मुख्य क्षमताएँ
 
-- **तीन-तरफ़ा मिलान (±1 पैसा)** — `travel.match` ऑर्डर, इनवॉइस और कार्ड को `trip_id` पर 0.01 की सहनशीलता से जोड़ता है; अपवाद प्रति यात्रा `invoice_missing`, `card_missing` या `amount_mismatch` के रूप में दोनों अंतर के साथ लौटते हैं।
-- **बिना चुप्पी के डुप्लीकेट हटाना** — दोहराए गए `trip_id` रखे जाते हैं और issue के रूप में सूचित होते हैं (`E_TRAVEL_TRIP_DUPLICATE`); हर id एक बार संग्रहीत होता है और बाकी `skipped` में गिने जाते हैं। दोहरे इनवॉइस और कार्ड लेन-देन `travel.duplicate_check` अलग से सूचीबद्ध करता है।
-- **यात्राओं के बीच दोहरा दावा** — `travel.reuse_check` आयात से पहले बताता है कि कोई इनवॉइस नंबर या कार्ड लेन-देन एक से अधिक यात्राओं में आ रहा है; इसके लिए पहले से संग्रहीत डेटा ज़रूरी नहीं।
-- **केवल-पढ़ने वाली नीति जाँच** — `travel.policy_check` (प्रति यात्रा सीमा + इनवॉइस की उपस्थिति) और `travel.daily_limit_check` (प्रति कर्मचारी दैनिक सीमा) केवल उल्लंघन की सूची लौटाते हैं: कोई बदलाव नहीं, कोई स्वीकृति नहीं, कोई भुगतान नहीं।
-- **दो शीट वाली बही का निर्यात** — `travel.export` `exports/travel-ledger.xlsx` लिखता है, शीट `Trips` / `Matches`; लिखने से पहले पथ सीमा-जाँच से गुज़रता है।
+- **तीन-तरफ़ा मिलान (±1 पैसा)** — `travel_match` ऑर्डर, इनवॉइस और कार्ड को `trip_id` पर 0.01 की सहनशीलता से जोड़ता है; अपवाद प्रति यात्रा `invoice_missing`, `card_missing` या `amount_mismatch` के रूप में दोनों अंतर के साथ लौटते हैं।
+- **बिना चुप्पी के डुप्लीकेट हटाना** — दोहराए गए `trip_id` रखे जाते हैं और issue के रूप में सूचित होते हैं (`E_TRAVEL_TRIP_DUPLICATE`); हर id एक बार संग्रहीत होता है और बाकी `skipped` में गिने जाते हैं। दोहरे इनवॉइस और कार्ड लेन-देन `travel_duplicate_check` अलग से सूचीबद्ध करता है।
+- **यात्राओं के बीच दोहरा दावा** — `travel_reuse_check` आयात से पहले बताता है कि कोई इनवॉइस नंबर या कार्ड लेन-देन एक से अधिक यात्राओं में आ रहा है; इसके लिए पहले से संग्रहीत डेटा ज़रूरी नहीं।
+- **केवल-पढ़ने वाली नीति जाँच** — `travel_policy_check` (प्रति यात्रा सीमा + इनवॉइस की उपस्थिति) और `travel_daily_limit_check` (प्रति कर्मचारी दैनिक सीमा) केवल उल्लंघन की सूची लौटाते हैं: कोई बदलाव नहीं, कोई स्वीकृति नहीं, कोई भुगतान नहीं।
+- **दो शीट वाली बही का निर्यात** — `travel_export` `exports/travel-ledger.xlsx` लिखता है, शीट `Trips` / `Matches`; लिखने से पहले पथ सीमा-जाँच से गुज़रता है।
 - **लोकल पहले** — सोर्स में कोई HTTP, DNS या WebSocket कॉल नहीं और कोई मॉडल कॉल नहीं; इनपुट और आउटपुट मशीन पर ही रहते हैं।
 
 ### टूल सतह
 
-टूल नाम स्थिर API हैं (`travel.*`); रनटाइम विवरण अंग्रेज़ी में हैं, आउटपुट की तरह।
+टूल नाम स्थिर API हैं (`travel_*`); रनटाइम विवरण अंग्रेज़ी में हैं, आउटपुट की तरह।
 
 | टूल | उद्देश्य | जोखिम |
 |---|---|---|
-| `travel.ingest` | यात्रा ऑर्डर/इनवॉइस/कार्ड पंक्तियाँ आयात करें | R1 लोकल लेखन |
-| `travel.match` | ऑर्डर/इनवॉइस/कार्ड का तीन-तरफ़ा मिलान (स्थिति लिखता है) | R1 लोकल लेखन |
-| `travel.duplicate_check` | प्रति यात्रा दोहरे इनवॉइस/कार्ड का पता लगाएँ | R0 |
-| `travel.policy_check` | केवल-पढ़ने वाली राशि सीमा और इनवॉइस उपस्थिति जाँच | R0 |
-| `travel.reuse_check` | केवल-पढ़ने वाली अंतर-यात्रा पुन:उपयोग जाँच | R0 |
-| `travel.daily_limit_check` | केवल-पढ़ने वाली प्रति-कर्मचारी दैनिक सीमा जाँच | R0 |
-| `travel.export` | मिलान बही xlsx का निर्यात (`Trips` / `Matches`) | R1 लोकल लेखन |
+| `travel_ingest` | यात्रा ऑर्डर/इनवॉइस/कार्ड पंक्तियाँ आयात करें | R1 लोकल लेखन |
+| `travel_match` | ऑर्डर/इनवॉइस/कार्ड का तीन-तरफ़ा मिलान (स्थिति लिखता है) | R1 लोकल लेखन |
+| `travel_duplicate_check` | प्रति यात्रा दोहरे इनवॉइस/कार्ड का पता लगाएँ | R0 |
+| `travel_policy_check` | केवल-पढ़ने वाली राशि सीमा और इनवॉइस उपस्थिति जाँच | R0 |
+| `travel_reuse_check` | केवल-पढ़ने वाली अंतर-यात्रा पुन:उपयोग जाँच | R0 |
+| `travel_daily_limit_check` | केवल-पढ़ने वाली प्रति-कर्मचारी दैनिक सीमा जाँच | R0 |
+| `travel_export` | मिलान बही xlsx का निर्यात (`Trips` / `Matches`) | R1 लोकल लेखन |
 
 ### इनपुट
 
@@ -177,25 +177,25 @@ quickstart ok
 
 | आर्ग्युमेंट | टूल | डिफ़ॉल्ट | अर्थ |
 |---|---|---|---|
-| `trips_csv` | `travel.ingest` | आवश्यक | यात्रा CSV टेक्स्ट |
-| `invoices_csv` | `travel.ingest` / `travel.reuse_check` | आवश्यक | इनवॉइस CSV टेक्स्ट |
-| `cards_csv` | `travel.ingest` / `travel.reuse_check` | आवश्यक | कार्ड CSV टेक्स्ट |
-| `max_order_cents` | `travel.policy_check` | आवश्यक | प्रति यात्रा राशि सीमा (पैसे) |
-| `require_invoice` | `travel.policy_check` | `false` | हर यात्रा के लिए इनवॉइस अनिवार्य करें |
-| `cap_cents` | `travel.daily_limit_check` | आवश्यक | प्रति कर्मचारी दैनिक सीमा (पैसे) |
+| `trips_csv` | `travel_ingest` | आवश्यक | यात्रा CSV टेक्स्ट |
+| `invoices_csv` | `travel_ingest` / `travel_reuse_check` | आवश्यक | इनवॉइस CSV टेक्स्ट |
+| `cards_csv` | `travel_ingest` / `travel_reuse_check` | आवश्यक | कार्ड CSV टेक्स्ट |
+| `max_order_cents` | `travel_policy_check` | आवश्यक | प्रति यात्रा राशि सीमा (पैसे) |
+| `require_invoice` | `travel_policy_check` | `false` | हर यात्रा के लिए इनवॉइस अनिवार्य करें |
+| `cap_cents` | `travel_daily_limit_check` | आवश्यक | प्रति कर्मचारी दैनिक सीमा (पैसे) |
 
 <details>
 <summary>पूरी टूल और आउटपुट सतह (7 टूल)</summary>
 
 | टूल | आर्ग्युमेंट | लौटाता है | जोखिम |
 |---|---|---|---|
-| `travel.ingest` | `trips_csv`, `invoices_csv`, `cards_csv` (टेक्स्ट, तीनों आवश्यक) | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`, और `issues[]` (`code`, `trip_id`, `occurrences`) | R1 लोकल लेखन |
-| `travel.match` | कोई नहीं | `matched` / `exceptions` / `duplicate_trips`; हर रिकॉर्ड में `state`, `reason` और दोनों अंतर | R1 लोकल लेखन (स्थिति) |
-| `travel.duplicate_check` | कोई नहीं | `duplicates[]` (`kind`, `trip_id`, `count`) | R0 |
-| `travel.policy_check` | `max_order_cents` (संख्या, आवश्यक), `require_invoice` (बूलियन, वैकल्पिक) | `checked` / `violations[]` (`trip_id`, `reason`) | R0 |
-| `travel.reuse_check` | `invoices_csv`, `cards_csv` (टेक्स्ट, दोनों आवश्यक) | `invoice_reuse[]` / `card_reuse[]` (`id`, `trips[]`) | R0 |
-| `travel.daily_limit_check` | `cap_cents` (संख्या, आवश्यक) | `days` / `over_limit[]` (`employee`, `date`, `total_cents`, `over_by_cents`) | R0 |
-| `travel.export` | कोई नहीं | `path` / `rows`; दो शीट वाली xlsx डेटा डायरेक्टरी के `exports/` में | R1 लोकल लेखन |
+| `travel_ingest` | `trips_csv`, `invoices_csv`, `cards_csv` (टेक्स्ट, तीनों आवश्यक) | `trips` / `invoices` / `cards` / `skipped` / `duplicate_trips`, और `issues[]` (`code`, `trip_id`, `occurrences`) | R1 लोकल लेखन |
+| `travel_match` | कोई नहीं | `matched` / `exceptions` / `duplicate_trips`; हर रिकॉर्ड में `state`, `reason` और दोनों अंतर | R1 लोकल लेखन (स्थिति) |
+| `travel_duplicate_check` | कोई नहीं | `duplicates[]` (`kind`, `trip_id`, `count`) | R0 |
+| `travel_policy_check` | `max_order_cents` (संख्या, आवश्यक), `require_invoice` (बूलियन, वैकल्पिक) | `checked` / `violations[]` (`trip_id`, `reason`) | R0 |
+| `travel_reuse_check` | `invoices_csv`, `cards_csv` (टेक्स्ट, दोनों आवश्यक) | `invoice_reuse[]` / `card_reuse[]` (`id`, `trips[]`) | R0 |
+| `travel_daily_limit_check` | `cap_cents` (संख्या, आवश्यक) | `days` / `over_limit[]` (`employee`, `date`, `total_cents`, `over_by_cents`) | R0 |
+| `travel_export` | कोई नहीं | `path` / `rows`; दो शीट वाली xlsx डेटा डायरेक्टरी के `exports/` में | R1 लोकल लेखन |
 
 </details>
 
@@ -239,7 +239,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 <details>
 <summary>नीति जाँच दस्तावेज़ बदलती है या कुछ स्वीकृत करती है?</summary>
 
-नहीं। `travel.policy_check` / `travel.daily_limit_check` / `travel.duplicate_check` / `travel.reuse_check` सभी केवल-पढ़ने वाली हैं और केवल उल्लंघन की सूची लौटाती हैं; स्वीकृति और भुगतान आपके पास रहते हैं, और इस पैकेज में स्वीकृति या बदलाव की क्षमता नहीं है।
+नहीं। `travel_policy_check` / `travel_daily_limit_check` / `travel_duplicate_check` / `travel_reuse_check` सभी केवल-पढ़ने वाली हैं और केवल उल्लंघन की सूची लौटाती हैं; स्वीकृति और भुगतान आपके पास रहते हैं, और इस पैकेज में स्वीकृति या बदलाव की क्षमता नहीं है।
 
 </details>
 
@@ -263,7 +263,7 @@ dsh --profile <profile> --dump-config | grep dsh-travel-recon
 - **केवल सार्वजनिक/सिंथेटिक**: `EVIDENCE.md` में 0 वास्तविक यात्राएँ और 20 सिंथेटिक यात्राएँ/इनवॉइस/कार्ड हैं; रेपो में ग्राहक डेटा नहीं है और ग्राहक-रन का दावा नहीं किया जाता।
 - **alpha / आंशिक / गिनी नहीं गई / GA नहीं**: उत्पादन-तैयारी का दावा नहीं; टूल सतह वर्ज़न के बीच बदल सकती है।
 - **CSV आकार निश्चित**: हेडर ऊपर दिए नामों के होने चाहिए (केस-असंवेदनशील) और राशि में अधिकतम दो दशमलव; प्रति फ़ाइल 5 MB तक रखें।
-- **प्रति यात्रा 1:1 मिलान**: हर यात्रा तीन-तरफ़ा मिलान में एक इनवॉइस और एक कार्ड पंक्ति देती है; उसी यात्रा की अतिरिक्त पंक्तियाँ `travel.duplicate_check` बताता है और कभी स्वतः नहीं मिलाई जातीं।
+- **प्रति यात्रा 1:1 मिलान**: हर यात्रा तीन-तरफ़ा मिलान में एक इनवॉइस और एक कार्ड पंक्ति देती है; उसी यात्रा की अतिरिक्त पंक्तियाँ `travel_duplicate_check` बताता है और कभी स्वतः नहीं मिलाई जातीं।
 - **आपके लिए स्वीकृति नहीं**: हर जाँच केवल-पढ़ने वाली है; कोई स्वीकृति, भुगतान, दस्तावेज़ संपादन या व्यय/यात्रा प्लेटफ़ॉर्म एकीकरण नहीं।
 - **प्रति टूल सटीक सीमाएँ** ऊपर की टूल तालिका और `ACCEPTANCE.csv` में हैं; जब तक कोई टूल स्पष्ट न कहे, कोई मॉडल कॉल नहीं और कोई नेटवर्क नहीं।
 
@@ -316,7 +316,7 @@ docs/assets/            README चित्र
 cordis.patch.yml        bundle patch (केवल इस प्लगइन की पंक्ति जोड़ता है)
 ```
 
-वर्तमान वर्ज़न `0.1.1` (`package.json` के अनुरूप); `node --test test/*.test.mjs` हरा है (25 केस, 0 विफल)। README चित्र [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) से बनते हैं और दोबारा चलाए जा सकते हैं:
+वर्तमान वर्ज़न `0.2.0` (`package.json` के अनुरूप); `node --test test/*.test.mjs` हरा है (26 केस, 0 विफल)। README चित्र [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) से बनते हैं और दोबारा चलाए जा सकते हैं:
 
 ```sh
 python scripts/gen-readme-assets.py
