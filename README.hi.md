@@ -44,6 +44,11 @@ dsh plugin --profile <profile> add dsh-travel-recon
   <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon संरचना: तीन CSV (4 यात्राएँ, 5 इनवॉइस, 3 कार्ड पंक्तियाँ) travel_ingest द्वारा trip_id पर संरेखित होकर प्रति-यात्रा मिलान मैट्रिक्स बनाते हैं, जिसमें ऑर्डर / इनवॉइस / कार्ड स्तंभ और बीच में दो चिह्नित अंतर Δ1 = इनवॉइस - ऑर्डर तथा Δ2 = कार्ड - इनवॉइस हैं, दोनों ±0.01 की सीमा में; मैट्रिक्स चार स्थितियों में बँटता है — matched 2 Matches शीट में, amount_mismatch (TRIP-1003, Δ1 -50.00) और card_missing (TRIP-1004, Δ2 -320.00) अपवाद सूची में; R1 लोकल-राइट रेल ingest → match → export, exports/travel-ledger.xlsx (Trips / Matches) लिखती है और R0 केवल-पढ़ने वाली रेल duplicate / policy / reuse / daily_limit केवल सूचियाँ लौटाती है; मूल CSV अपरिवर्तित, कोई नेटवर्क नहीं और कोई मॉडल कॉल नहीं">
 </picture>
 
+![dsh-travel-recon का असली टर्मिनल रन](docs/assets/dsh-travel-recon-demo.gif)
+
+*इस रिपॉज़िटरी में दर्ज असली रन का एनिमेटेड रीप्ले।*
+
+
 ## तीन चरणों में शुरुआत
 
 1. **इंस्टॉल करें** (कोई एक चैनल चुनें; npm अनुशंसित है, बाकी वर्ज़न पिन या ऑफ़लाइन के लिए):

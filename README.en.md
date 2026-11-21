@@ -44,6 +44,11 @@ dsh plugin --profile <profile> add dsh-travel-recon
   <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="dsh-travel-recon structure: three CSVs (4 trips, 5 invoices, 3 cards) keyed by trip_id through travel_ingest into a per-trip reconciliation matrix with order / invoice / card columns and two signed gaps in between, Δ1 = invoice - order and Δ2 = card - invoice, both bounded by ±0.01; the matrix dispatches into four states — matched 2 to the Matches sheet, amount_mismatch (TRIP-1003, Δ1 -50.00) and card_missing (TRIP-1004, Δ2 -320.00) to the exception list; the R1 local-write rail ingest → match → export writes exports/travel-ledger.xlsx (Trips / Matches), the R0 read-only rail duplicate / policy / reuse / daily_limit only returns lists; the source CSV stays read-only, with no network and no model call">
 </picture>
 
+![dsh-travel-recon: real terminal run](docs/assets/dsh-travel-recon-demo.gif)
+
+*Animated replay of a real run recorded in this repository.*
+
+
 ## Three-step setup
 
 1. **Install** (pick one; npm is the recommended channel, the rest are for pinning or offline):

@@ -34,6 +34,10 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 ## 它是什么
 
+![dsh-travel-recon 真实终端运行](docs/assets/dsh-travel-recon-demo.gif)
+
+*本仓库一次真实运行的动图回放。*
+
 `dsh-travel-recon` 把差旅行程、发票、卡流水三份 CSV 逐单核对：先导入去重，再按 `trip_id` 做 ±1 分钱的三单匹配，然后把重复报销、金额对不上、缺发票、每日超限的部分单独列成清单，最后导出一份可以直接翻的 xlsx 台账。全程在你自己的机器上跑——不调模型、不联网、不上传，原 CSV 不会被改动。
 
 - **适合**：几十到几百条差旅行程、发票和卡流水；需要一份逐单对账、重复报销提示和每日限额超标的本地台账。

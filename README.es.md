@@ -44,6 +44,11 @@ dsh plugin --profile <profile> add dsh-travel-recon
   <img src="docs/assets/dsh-travel-recon-flow-v5-light.svg" width="100%" alt="Estructura de dsh-travel-recon: tres CSV (4 viajes, 5 facturas, 3 tarjetas) alineados por trip_id con travel_ingest en una matriz de conciliación por viaje, con columnas de orden / factura / tarjeta y dos diferencias con signo entre medias, Δ1 = factura - orden y Δ2 = tarjeta - factura, ambas con límite ±0.01; la matriz se reparte en cuatro estados — matched 2 a la hoja Matches, amount_mismatch (TRIP-1003, Δ1 -50.00) y card_missing (TRIP-1004, Δ2 -320.00) a la lista de excepciones; el carril R1 de escritura local ingest → match → export escribe exports/travel-ledger.xlsx (Trips / Matches) y el carril R0 de solo lectura duplicate / policy / reuse / daily_limit solo devuelve listas; el CSV original queda intacto, sin red y sin modelo">
 </picture>
 
+![dsh-travel-recon: ejecución real de terminal](docs/assets/dsh-travel-recon-demo.gif)
+
+*Repetición animada de una ejecución real registrada en este repositorio.*
+
+
 ## Instalación en tres pasos
 
 1. **Instalar** (elige un canal; npm es el recomendado y el resto sirve para fijar versión o trabajar sin conexión):
