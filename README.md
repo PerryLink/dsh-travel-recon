@@ -322,7 +322,7 @@ docs/assets/            README 配图
 cordis.patch.yml        bundle patch（只 insert 本插件一行）
 ```
 
-当前版本 `0.2.1`（与 `package.json` 一致）；测试 `node --test test/*.test.mjs` 全绿（26 个用例，0 失败）。README 配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python + Pillow），可重复执行：
+当前版本 `0.2.2`（与 `package.json` 一致）；测试 `node --test test/*.test.mjs` 全绿（26 个用例，0 失败）。README 配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python + Pillow），可重复执行：
 
 ```sh
 python scripts/gen-readme-assets.py
