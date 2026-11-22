@@ -11,6 +11,8 @@
 
 本地对账插件：三份 CSV 进，一份两表 xlsx 台账出；不调模型、不联网、不上传。
 
+最近一次核验：DeepSeek Harness `dsh-v0.2.3-alpha.1`（2026-11-22）。
+
 [安装](#三步上手) · [配置](#配置) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -53,7 +55,7 @@ dsh plugin --profile <profile> add dsh-travel-recon
 1. **安装**（四选一；npm 是推荐通道，其余用于固定版本或离线）：
 
    ```sh
-   # npm（推荐，已发布 0.2.0）
+   # npm（推荐，已发布 0.2.1）
    dsh plugin --profile <profile> add dsh-travel-recon
    # git 通道（最新 main；等价于 git+https://github.com/PerryLink/dsh-travel-recon.git）
    dsh plugin --profile <profile> add github:PerryLink/dsh-travel-recon
@@ -320,7 +322,7 @@ docs/assets/            README 配图
 cordis.patch.yml        bundle patch（只 insert 本插件一行）
 ```
 
-当前版本 `0.2.0`（与 `package.json` 一致）；测试 `node --test test/*.test.mjs` 全绿（26 个用例，0 失败）。README 配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python + Pillow），可重复执行：
+当前版本 `0.2.1`（与 `package.json` 一致）；测试 `node --test test/*.test.mjs` 全绿（26 个用例，0 失败）。README 配图由 [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) 程序化生成（Python + Pillow），可重复执行：
 
 ```sh
 python scripts/gen-readme-assets.py

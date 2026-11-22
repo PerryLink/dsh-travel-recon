@@ -11,6 +11,8 @@
 
 एक लोकल मिलान प्लगइन: तीन CSV अंदर, दो शीट वाली xlsx बही बाहर; कोई मॉडल कॉल नहीं, कोई नेटवर्क नहीं, कोई अपलोड नहीं।
 
+अंतिम सत्यापन: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [इंस्टॉल](#तीन-चरणों-में-शुरुआत) · [कॉन्फ़िगरेशन](#कॉन्फ़िगरेशन) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -48,13 +50,12 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 *इस रिपॉज़िटरी में दर्ज असली रन का एनिमेटेड रीप्ले।*
 
-
 ## तीन चरणों में शुरुआत
 
 1. **इंस्टॉल करें** (कोई एक चैनल चुनें; npm अनुशंसित है, बाकी वर्ज़न पिन या ऑफ़लाइन के लिए):
 
    ```sh
-   # npm (अनुशंसित, 0.2.0 प्रकाशित)
+   # npm (अनुशंसित, 0.2.1 प्रकाशित)
    dsh plugin --profile <profile> add dsh-travel-recon
    # git चैनल (नवीनतम main; बराबर है git+https://github.com/PerryLink/dsh-travel-recon.git)
    dsh plugin --profile <profile> add github:PerryLink/dsh-travel-recon
@@ -321,7 +322,7 @@ docs/assets/            README चित्र
 cordis.patch.yml        bundle patch (केवल इस प्लगइन की पंक्ति जोड़ता है)
 ```
 
-वर्तमान वर्ज़न `0.2.0` (`package.json` के अनुरूप); `node --test test/*.test.mjs` हरा है (26 केस, 0 विफल)। README चित्र [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) से बनते हैं और दोबारा चलाए जा सकते हैं:
+वर्तमान वर्ज़न `0.2.1` (`package.json` के अनुरूप); `node --test test/*.test.mjs` हरा है (26 केस, 0 विफल)। README चित्र [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) से बनते हैं और दोबारा चलाए जा सकते हैं:
 
 ```sh
 python scripts/gen-readme-assets.py

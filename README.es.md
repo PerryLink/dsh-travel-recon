@@ -11,6 +11,8 @@
 
 Un plugin local de conciliación: tres CSV de entrada, un libro xlsx de dos hojas de salida; sin llamada al modelo, sin red, sin subidas.
 
+Última verificación: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [Instalar](#instalación-en-tres-pasos) · [Configuración](#configuración) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -48,13 +50,12 @@ dsh plugin --profile <profile> add dsh-travel-recon
 
 *Repetición animada de una ejecución real registrada en este repositorio.*
 
-
 ## Instalación en tres pasos
 
 1. **Instalar** (elige un canal; npm es el recomendado y el resto sirve para fijar versión o trabajar sin conexión):
 
    ```sh
-   # npm (recomendado, 0.2.0 publicado)
+   # npm (recomendado, 0.2.1 publicado)
    dsh plugin --profile <profile> add dsh-travel-recon
    # canal git (último main; equivale a git+https://github.com/PerryLink/dsh-travel-recon.git)
    dsh plugin --profile <profile> add github:PerryLink/dsh-travel-recon
@@ -321,7 +322,7 @@ docs/assets/            imágenes del README
 cordis.patch.yml        patch del bundle (inserta solo la fila de este plugin)
 ```
 
-Versión actual `0.2.0` (coincide con `package.json`); `node --test test/*.test.mjs` pasa en verde (26 casos, 0 fallos). Las imágenes del README las genera [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) y se puede repetir:
+Versión actual `0.2.1` (coincide con `package.json`); `node --test test/*.test.mjs` pasa en verde (26 casos, 0 fallos). Las imágenes del README las genera [`scripts/gen-readme-assets.py`](scripts/gen-readme-assets.py) (Python + Pillow) y se puede repetir:
 
 ```sh
 python scripts/gen-readme-assets.py

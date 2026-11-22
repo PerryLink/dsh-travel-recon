@@ -38,6 +38,10 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-22
+
+- Compatibility: declare DeepSeek Harness 0.2.3-alpha.1 support (>=0.2.3-0 <0.3.0-0 in engines.dsh and every @deepseek-ai/dsh-* peer range) and refresh README verification stamps.
+
 ### Added
 
 - `travel_reuse_check`: pre-ingest cross-trip reuse check that reports invoice IDs and card transaction IDs appearing under more than one trip (the classic double-claim pattern that the current id-keyed ingest would otherwise overwrite). Read-only. Verified by `node --test test/*.test.mjs` (7/7).
